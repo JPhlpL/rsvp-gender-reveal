@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { PartyMark } from "@/components/illustrations";
 import {
   Card,
   CardContent,
@@ -12,8 +12,6 @@ import {
   APP_ADMIN_DISPLAY_NAME,
   LOGIN_METADATA_DESCRIPTION,
   LOGIN_METADATA_TITLE,
-  WEDDING_ASSET_PATHS,
-  WEDDING_COUPLE_NAMES_SHORT,
 } from "@/utils/constants";
 
 export const metadata: Metadata = {
@@ -23,35 +21,28 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-wedding-cream px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-party-cream px-4">
       {/* Background gradient */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--color-wedding-beige)_0%,_var(--color-wedding-cream)_50%,_var(--color-wedding-white)_100%)] pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-sm">
         {/* Logo & Title */}
         <div className="mb-8 text-center">
-          <Image
-            src={WEDDING_ASSET_PATHS.logo}
-            alt={WEDDING_COUPLE_NAMES_SHORT}
-            width={80}
-            height={80}
-            className="mx-auto mb-4 rounded-full border-2 border-wedding-sand shadow-sm"
-          />
-          <h1 className="text-xl font-semibold tracking-tight text-wedding-brown">
+          <PartyMark className="mx-auto mb-4 h-20 w-20" />
+          <h1 className="text-xl font-semibold tracking-tight text-party-ink">
             {APP_ADMIN_DISPLAY_NAME}
           </h1>
-          <p className="mt-1 text-sm text-wedding-brown-medium">
+          <p className="mt-1 text-sm text-party-ink-soft">
             Admin Dashboard
           </p>
         </div>
 
         {/* Login Card */}
-        <Card className="border-wedding-sand/50 bg-white/70 backdrop-blur-sm shadow-sm">
+        <Card className="border-party-ink/15 bg-white/70 backdrop-blur-sm shadow-sm">
           <CardHeader className="text-center pb-4">
-            <CardTitle className="text-base text-wedding-brown">
+            <CardTitle className="text-base text-party-ink">
               Welcome back
             </CardTitle>
-            <CardDescription className="text-wedding-brown-medium">
+            <CardDescription className="text-party-ink-soft">
               Sign in to manage your guest list
             </CardDescription>
           </CardHeader>
@@ -60,7 +51,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
-        <p className="mt-6 text-center text-xs text-wedding-brown-warm/60">
+        <p className="mt-6 text-center text-xs text-party-ink-soft/60">
           Only authorized administrators can access this area.
         </p>
       </div>

@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { PartyMark } from "@/components/illustrations";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logoutAction } from "@/actions/auth";
-import { APP_ADMIN_DISPLAY_NAME, WEDDING_ASSET_PATHS } from "@/utils/constants";
+import { APP_ADMIN_DISPLAY_NAME } from "@/utils/constants";
 
 interface AdminNavigationProps {
   userEmail: string;
@@ -18,23 +18,17 @@ export function AdminNavigation({ userEmail }: AdminNavigationProps) {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <header className="border-b border-wedding-sand/40 bg-wedding-cream/90 backdrop-blur-md px-4 py-3 sm:px-6 sm:py-4">
+    <header className="border-b border-party-ink/15 bg-party-cream/90 backdrop-blur-md px-4 py-3 sm:px-6 sm:py-4">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
         <div className="flex items-center gap-3 sm:gap-5 min-w-0">
           {/* Logo */}
-          <Image
-            src={WEDDING_ASSET_PATHS.logo}
-            alt="JV"
-            width={36}
-            height={36}
-            className="rounded-full border border-wedding-sand shadow-sm flex-shrink-0"
-          />
+          <PartyMark className="h-9 w-9 flex-shrink-0" />
 
           <div className="min-w-0">
-            <h1 className="text-sm sm:text-base font-semibold text-wedding-brown truncate">
+            <h1 className="text-sm sm:text-base font-semibold text-party-ink truncate">
               {APP_ADMIN_DISPLAY_NAME}
             </h1>
-            <p className="text-xs text-wedding-brown-medium truncate">{userEmail}</p>
+            <p className="text-xs text-party-ink-soft truncate">{userEmail}</p>
           </div>
 
           {/* Desktop nav */}
@@ -45,8 +39,8 @@ export function AdminNavigation({ userEmail }: AdminNavigationProps) {
                 size="sm"
                 className={`gap-1.5 ${
                   isActive("/dashboard")
-                    ? "bg-wedding-brown text-wedding-white hover:bg-wedding-brown/90"
-                    : "text-wedding-brown-medium hover:text-wedding-brown hover:bg-wedding-sand/30"
+                    ? "bg-party-ink text-party-white hover:bg-party-ink/90"
+                    : "text-party-ink-soft hover:text-party-ink hover:bg-party-ink/15"
                 }`}
               >
                 <LayoutDashboard className="h-4 w-4" />
@@ -59,8 +53,8 @@ export function AdminNavigation({ userEmail }: AdminNavigationProps) {
                 size="sm"
                 className={`gap-1.5 ${
                   isActive("/dashboard/guests")
-                    ? "bg-wedding-brown text-wedding-white hover:bg-wedding-brown/90"
-                    : "text-wedding-brown-medium hover:text-wedding-brown hover:bg-wedding-sand/30"
+                    ? "bg-party-ink text-party-white hover:bg-party-ink/90"
+                    : "text-party-ink-soft hover:text-party-ink hover:bg-party-ink/15"
                 }`}
               >
                 <Users className="h-4 w-4" />
@@ -75,7 +69,7 @@ export function AdminNavigation({ userEmail }: AdminNavigationProps) {
             type="submit"
             variant="outline"
             size="sm"
-            className="text-xs sm:text-sm border-wedding-sand/60 text-wedding-brown-medium hover:bg-wedding-sand/20 hover:text-wedding-brown"
+            className="text-xs sm:text-sm border-party-ink/15 text-party-ink-soft hover:bg-party-ink/15 hover:text-party-ink"
           >
             Sign Out
           </Button>
@@ -90,8 +84,8 @@ export function AdminNavigation({ userEmail }: AdminNavigationProps) {
             size="sm"
             className={`w-full gap-1.5 ${
               isActive("/dashboard")
-                ? "bg-wedding-brown text-wedding-white hover:bg-wedding-brown/90"
-                : "text-wedding-brown-medium hover:text-wedding-brown hover:bg-wedding-sand/30"
+                ? "bg-party-ink text-party-white hover:bg-party-ink/90"
+                : "text-party-ink-soft hover:text-party-ink hover:bg-party-ink/15"
             }`}
           >
             <LayoutDashboard className="h-4 w-4" />
@@ -104,8 +98,8 @@ export function AdminNavigation({ userEmail }: AdminNavigationProps) {
             size="sm"
             className={`w-full gap-1.5 ${
               isActive("/dashboard/guests")
-                ? "bg-wedding-brown text-wedding-white hover:bg-wedding-brown/90"
-                : "text-wedding-brown-medium hover:text-wedding-brown hover:bg-wedding-sand/30"
+                ? "bg-party-ink text-party-white hover:bg-party-ink/90"
+                : "text-party-ink-soft hover:text-party-ink hover:bg-party-ink/15"
             }`}
           >
             <Users className="h-4 w-4" />

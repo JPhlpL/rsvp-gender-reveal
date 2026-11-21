@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Figtree } from "next/font/google";
+import { Fredoka, Geist_Mono, Nunito } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
@@ -9,16 +9,21 @@ import {
   APP_PAGE_TITLE,
 } from "@/utils/constants";
 
-const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const nunito = Nunito({
   subsets: ["latin"],
+  variable: "--font-nunito",
+  display: "swap",
+});
+
+const fredoka = Fredoka({
+  subsets: ["latin"],
+  variable: "--font-fredoka",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
@@ -34,7 +39,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", figtree.variable)}
+      className={cn(
+        "h-full antialiased font-sans",
+        nunito.variable,
+        fredoka.variable,
+        geistMono.variable
+      )}
     >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
@@ -42,9 +52,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <Toaster position="top-right" />
-        {/* Watermark */}
         <div className="fixed bottom-2 left-1/2 -translate-x-1/2 z-[200] pointer-events-none select-none">
-          <p className="text-[9px] sm:text-[10px] text-black/15 tracking-wider text-center">
+          <p className="text-[9px] sm:text-[10px] text-party-ink/25 tracking-wider text-center">
             {APP_COPYRIGHT_LINE}
           </p>
         </div>
