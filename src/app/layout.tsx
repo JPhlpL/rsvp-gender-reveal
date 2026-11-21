@@ -7,6 +7,7 @@ import {
   APP_COPYRIGHT_LINE,
   APP_PAGE_DESCRIPTION,
   APP_PAGE_TITLE,
+  DEFAULT_PUBLIC_APP_URL,
 } from "@/utils/constants";
 
 const nunito = Nunito({
@@ -27,8 +28,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? DEFAULT_PUBLIC_APP_URL),
   title: APP_PAGE_TITLE,
   description: APP_PAGE_DESCRIPTION,
+  openGraph: {
+    title: APP_PAGE_TITLE,
+    description: APP_PAGE_DESCRIPTION,
+    type: "website",
+  },
 };
 
 export default function RootLayout({
