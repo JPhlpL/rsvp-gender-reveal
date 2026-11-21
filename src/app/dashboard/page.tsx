@@ -1,11 +1,13 @@
-import { fetchGuestsAction } from "@/actions/guest";
+import { requireAdmin } from "@/lib/auth/require-admin";
+import { guestRepository } from "@/repositories/guestRepository";
 import { DashboardStats } from "@/components/admin/dashboard-stats";
 import { calculateGuestStatistics } from "@/utils/statistics";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const guests = await fetchGuestsAction();
+  await requireAdmin();
+  const guests = await guestRepository.getAllGuests();
   const stats = calculateGuestStatistics(guests);
 
   return (

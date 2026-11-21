@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { loginSchema } from "@/schemas/auth";
+import { isAdminEmail, parseAdminEmails } from "@/lib/auth/admin-emails";
 
 export type AuthState = {
   error?: string;
@@ -26,7 +27,7 @@ export async function loginAction(
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
   });
@@ -34,6 +35,11 @@ export async function loginAction(
   if (error) {
     console.error("Supabase auth error:", error);
     return { error: error.message || "Invalid email or password" };
+  }
+
+  if (!isAdminEmail(data.user?.email, parseAdminEmails(process.env.ADMIN_EMAILS))) {
+    await supabase.auth.signOut();
+    return { error: "This account isn't allowed to manage this event." };
   }
 
   redirect("/dashboard");

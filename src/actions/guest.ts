@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createGuestSchema, updateGuestSchema } from "@/schemas/guest";
 import { guestRepository } from "@/repositories/guestRepository";
-import type { Guest } from "@/types/guest";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 export type GuestActionState = {
   error?: string;
@@ -28,6 +28,7 @@ export async function createGuestAction(
   _prevState: GuestActionState,
   formData: FormData
 ): Promise<GuestActionState> {
+  await requireAdmin();
   const parsed = createGuestSchema.safeParse(readGuestFields(formData));
 
   if (!parsed.success) {
@@ -54,6 +55,7 @@ export async function updateGuestAction(
   _prevState: GuestActionState,
   formData: FormData
 ): Promise<GuestActionState> {
+  await requireAdmin();
   const parsed = updateGuestSchema.safeParse({
     id: formData.get("id"),
     ...readGuestFields(formData),
@@ -82,6 +84,7 @@ export async function updateGuestAction(
 export async function deleteGuestAction(
   id: string
 ): Promise<GuestActionState> {
+  await requireAdmin();
   try {
     await guestRepository.deleteGuest(id);
     revalidateDashboard();
@@ -93,6 +96,7 @@ export async function deleteGuestAction(
 }
 
 export async function deleteAllGuestsAction(): Promise<GuestActionState> {
+  await requireAdmin();
   try {
     await guestRepository.deleteAllGuests();
     revalidateDashboard();
@@ -103,11 +107,3 @@ export async function deleteAllGuestsAction(): Promise<GuestActionState> {
   }
 }
 
-export async function fetchGuestsAction(): Promise<Guest[]> {
-  try {
-    return await guestRepository.getAllGuests();
-  } catch (error) {
-    console.error("Error fetching guests:", error);
-    return [];
-  }
-}

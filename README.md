@@ -17,7 +17,7 @@ npx supabase status -o env         # copy API_URL, ANON_KEY, SERVICE_ROLE_KEY in
 cp .env.example .env.local         # then fill in the values (see below)
 npx supabase db reset              # apply migrations + seed sample guests
 npm run admin:create -- you@example.com 'a-strong-password'
-npm run dev                        # http://localhost:3000
+npm run dev                        # http://localhost:3005
 ```
 
 `.env.local` for local development:
@@ -26,7 +26,7 @@ npm run dev                        # http://localhost:3000
 NEXT_PUBLIC_SUPABASE_URL=<API_URL>
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<ANON_KEY>
 SUPABASE_SERVICE_ROLE_KEY=<SERVICE_ROLE_KEY>
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3005
 ADMIN_EMAILS=you@example.com
 ```
 

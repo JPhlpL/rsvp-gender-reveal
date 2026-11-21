@@ -1,4 +1,5 @@
-import { fetchGuestsAction } from "@/actions/guest";
+import { requireAdmin } from "@/lib/auth/require-admin";
+import { guestRepository } from "@/repositories/guestRepository";
 import { CreateGuestModal } from "@/components/admin/create-guest-modal";
 import { DeleteAllGuestsDialog } from "@/components/admin/delete-all-guests-dialog";
 import { GuestTable } from "@/components/admin/guest-table";
@@ -8,7 +9,8 @@ import { ExportGuestsButton } from "@/components/admin/export-guests-button";
 export const dynamic = "force-dynamic";
 
 export default async function GuestsPage() {
-  const guests = await fetchGuestsAction();
+  await requireAdmin();
+  const guests = await guestRepository.getAllGuests();
 
   return (
     <>

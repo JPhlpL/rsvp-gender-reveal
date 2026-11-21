@@ -304,4 +304,4 @@ export const ADMIN_DELETE_ALL_GUESTS_CONFIRM_PHRASE = "DELETE ALL";
 export const EXPORT_GUESTS_DEFAULT_BASENAME = "wedding-guests";
 
 // --- Fallback when env is missing (dev) ---
-export const DEFAULT_PUBLIC_APP_URL = "http://localhost:3000";
+export const DEFAULT_PUBLIC_APP_URL = "http://localhost:3005";
