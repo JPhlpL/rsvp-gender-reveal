@@ -2,6 +2,7 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import { guestRepository } from "@/repositories/guestRepository";
 import { settingsRepository } from "@/repositories/settingsRepository";
 import { DashboardStats } from "@/components/admin/dashboard-stats";
+import { PlusOneRequestsCard } from "@/components/admin/plus-one-requests-card";
 import { SettingsCard } from "@/components/admin/settings-card";
 import { describeRsvpStatus, isRsvpOpen, manilaDateFromDeadline } from "@/lib/rsvp-window";
 import { calculateGuestStatistics } from "@/utils/statistics";
@@ -25,6 +26,7 @@ export default async function DashboardPage() {
         statusLine={describeRsvpStatus(settings, now)}
         isOpen={isRsvpOpen(settings, now)}
       />
+      <PlusOneRequestsCard rows={guests} />
       <DashboardStats stats={stats} guests={guests} />
     </div>
   );
