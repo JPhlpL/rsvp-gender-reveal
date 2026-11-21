@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function GuestsPage() {
   await requireAdmin();
-  const guests = await guestRepository.getAllGuests();
+  const guests = await guestRepository.getAllGuestsWithResponses();
 
   return (
     <>

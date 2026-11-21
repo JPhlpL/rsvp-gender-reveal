@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   await requireAdmin();
-  const guests = await guestRepository.getAllGuests();
+  const guests = await guestRepository.getAllGuestsWithResponses();
   const stats = calculateGuestStatistics(guests);
 
   return (

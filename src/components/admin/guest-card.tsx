@@ -5,16 +5,17 @@ import { EditGuestModal } from "./edit-guest-modal";
 import { DeleteGuestDialog } from "./delete-guest-dialog";
 import { CopyLinkModal } from "./copy-link-modal";
 import { ViewResponseModal } from "./view-response-modal";
-import type { Guest } from "@/types/guest";
+import type { GuestWithResponse } from "@/types/guest";
+import { guessLabel, plusOneSummary } from "@/lib/guest-labels";
 
 interface GuestCardProps {
-  guest: Guest;
+  guest: GuestWithResponse;
 }
 
 export function GuestCard({ guest }: GuestCardProps) {
   const getStatusBadge = (status: string) => {
     const statusColors = {
-      pending: "bg-beige-50 text-beige-700 border-beige-200",
+      pending: "bg-amber-50 text-amber-700 border-amber-200",
       attending: "bg-green-50 text-green-700 border-green-200",
       not_attending: "bg-red-50 text-red-700 border-red-200",
     };
@@ -57,6 +58,13 @@ export function GuestCard({ guest }: GuestCardProps) {
   return (
     <BaseCard header={cardHeader} footer={cardFooter} compact>
       <div className="space-y-1">
+        <div className="text-xs">
+          <span className="text-muted-foreground">Guess: </span>
+          <span className="font-semibold">{guessLabel(guest.response)}</span>
+          <span className="text-muted-foreground"> · Plus-ones: </span>
+          <span className="font-semibold">{plusOneSummary(guest.response)}</span>
+        </div>
+
         {/* Created Date */}
         <div className="text-[10px] text-muted-foreground">
           Created: {new Date(guest.created_at).toLocaleDateString()}

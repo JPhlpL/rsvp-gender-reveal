@@ -3,10 +3,10 @@
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { exportGuestsToExcel } from "@/utils/exportGuests";
-import type { Guest } from "@/types/guest";
+import type { GuestWithResponse } from "@/types/guest";
 
 interface ExportGuestsButtonProps {
-  guests: Guest[];
+  guests: GuestWithResponse[];
 }
 
 export function ExportGuestsButton({ guests }: ExportGuestsButtonProps) {

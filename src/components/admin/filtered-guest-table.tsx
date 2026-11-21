@@ -13,11 +13,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BaseTable } from "@/components/application/table/base-table";
-import type { AttendanceStatus, Guest } from "@/types/guest";
+import type { AttendanceStatus, GuestWithResponse } from "@/types/guest";
 import { ADMIN_DASHBOARD_FILTERED_TABLE_PAGE_SIZE } from "@/utils/constants";
 
 interface FilteredGuestTableProps {
-  guests: Guest[];
+  guests: GuestWithResponse[];
   title: string;
   showPlusGuests?: boolean;
 }
@@ -38,7 +38,7 @@ export function FilteredGuestTable({
 
   const getStatusBadge = (status: string) => {
     const statusColors = {
-      pending: "bg-beige-50 text-beige-700 border-beige-200",
+      pending: "bg-amber-50 text-amber-700 border-amber-200",
       attending: "bg-green-50 text-green-700 border-green-200",
       not_attending: "bg-red-50 text-red-700 border-red-200",
     };
@@ -61,10 +61,10 @@ export function FilteredGuestTable({
   };
 
   // Interim: plus-one seats are reworked in Task 13.
-  const calculateTotalSeats = (guest: Guest) => (guest ? 1 : 1);
+  const calculateTotalSeats = (guest: GuestWithResponse) => (guest ? 1 : 1);
 
-  const columns = useMemo<ColumnDef<Guest>[]>(() => {
-    const baseColumns: ColumnDef<Guest>[] = [
+  const columns = useMemo<ColumnDef<GuestWithResponse>[]>(() => {
+    const baseColumns: ColumnDef<GuestWithResponse>[] = [
       {
         accessorKey: "name",
         header: ({ column }) => {

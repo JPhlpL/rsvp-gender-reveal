@@ -12,11 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GuestCard } from "./guest-card";
-import type { AttendanceStatus, Guest } from "@/types/guest";
+import type { AttendanceStatus, GuestWithResponse } from "@/types/guest";
 import { ADMIN_GUEST_CARD_LIST_PAGE_SIZE } from "@/utils/constants";
 
 interface GuestCardListProps {
-  guests: Guest[];
+  guests: GuestWithResponse[];
 }
 
 type StatusFilter = "all" | AttendanceStatus;

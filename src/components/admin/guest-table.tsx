@@ -17,11 +17,12 @@ import { EditGuestModal } from "./edit-guest-modal";
 import { DeleteGuestDialog } from "./delete-guest-dialog";
 import { CopyLinkModal } from "./copy-link-modal";
 import { ViewResponseModal } from "./view-response-modal";
-import type { AttendanceStatus, Guest } from "@/types/guest";
+import type { AttendanceStatus, GuestWithResponse } from "@/types/guest";
 import { ADMIN_GUEST_TABLE_PAGE_SIZE } from "@/utils/constants";
+import { guessLabel, plusOneSummary } from "@/lib/guest-labels";
 
 interface GuestTableProps {
-  guests: Guest[];
+  guests: GuestWithResponse[];
 }
 
 type StatusFilter = "all" | AttendanceStatus;
@@ -34,7 +35,7 @@ export function GuestTable({ guests }: GuestTableProps) {
     return guests.filter((g) => g.attendance_status === statusFilter);
   }, [guests, statusFilter]);
 
-  const columns = useMemo<ColumnDef<Guest>[]>(
+  const columns = useMemo<ColumnDef<GuestWithResponse>[]>(
     () => [
       {
         accessorKey: "name",
@@ -56,22 +57,6 @@ export function GuestTable({ guests }: GuestTableProps) {
         ),
       },
       {
-        accessorKey: "email",
-        header: () => <div className="text-center">Email</div>,
-        cell: ({ row }) => {
-          const email = row.getValue("email") as string | null;
-          return <div className="text-center">{email || "-"}</div>;
-        },
-      },
-      {
-        accessorKey: "phone",
-        header: () => <div className="text-center">Phone</div>,
-        cell: ({ row }) => {
-          const phone = row.getValue("phone") as string | null;
-          return <div className="text-center">{phone || "-"}</div>;
-        },
-      },
-      {
         accessorKey: "attendance_status",
         header: ({ column }) => {
           return (
@@ -91,7 +76,7 @@ export function GuestTable({ guests }: GuestTableProps) {
         cell: ({ row }) => {
           const status = row.getValue("attendance_status") as string;
           const statusColors = {
-            pending: "bg-beige-50 text-beige-700 border-beige-200",
+            pending: "bg-amber-50 text-amber-700 border-amber-200",
             attending: "bg-green-50 text-green-700 border-green-200",
             not_attending: "bg-red-50 text-red-700 border-red-200",
           };
@@ -121,6 +106,31 @@ export function GuestTable({ guests }: GuestTableProps) {
           const b = rowB.getValue(columnId) as string;
           return (order[a] ?? 99) - (order[b] ?? 99);
         },
+      },
+      {
+        id: "guess",
+        header: () => <div className="text-center">Guess</div>,
+        cell: ({ row }) => {
+          const label = guessLabel(row.original.response);
+          const tone =
+            label === "Girl"
+              ? "bg-party-pink/50 text-party-pink-deep"
+              : label === "Boy"
+                ? "bg-party-blue/50 text-party-blue-deep"
+                : "text-muted-foreground";
+          return (
+            <div className="flex justify-center">
+              <span className={`rounded-full px-3 py-1 text-sm font-medium ${tone}`}>{label}</span>
+            </div>
+          );
+        },
+      },
+      {
+        id: "plus_ones",
+        header: () => <div className="text-center">Plus-ones</div>,
+        cell: ({ row }) => (
+          <div className="text-center text-sm">{plusOneSummary(row.original.response)}</div>
+        ),
       },
       {
         accessorKey: "created_at",

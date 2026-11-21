@@ -1,13 +1,15 @@
 import { createClient } from "@/utils/supabase/server";
-import type { Guest, GuestInsert, GuestUpdate } from "@/types/guest";
+import type { Guest, GuestInsert, GuestUpdate, GuestWithResponse } from "@/types/guest";
 
+/** Admin-side access to `guests` (session client; RLS allows authenticated admins only). */
 export const guestRepository = {
-  async getAllGuests(): Promise<Guest[]> {
+  /** Every guest with their response (null when they have not answered), newest first. */
+  async getAllGuestsWithResponses(): Promise<GuestWithResponse[]> {
     const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("guests")
-      .select("*")
+      .select("*, response:responses(*)")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -15,17 +17,13 @@ export const guestRepository = {
       throw new Error("Failed to fetch guests");
     }
 
-    return data || [];
+    return data ?? [];
   },
 
   async createGuest(guest: GuestInsert): Promise<Guest> {
     const supabase = await createClient();
 
-    const { data, error } = await supabase
-      .from("guests")
-      .insert(guest)
-      .select()
-      .single();
+    const { data, error } = await supabase.from("guests").insert(guest).select().single();
 
     if (error) {
       console.error("Error creating guest:", error);
@@ -65,58 +63,20 @@ export const guestRepository = {
   },
 
   /**
-   * Remove every guest row. `responses` rows CASCADE-delete via FK (`ON DELETE CASCADE`).
-   * Uses `.neq('id', …)` so PostgREST applies a filter (required for bulk delete).
+   * Remove every guest row; their responses cascade-delete via the foreign key.
+   * PostgREST requires a filter for bulk deletes, hence `.neq` on an impossible id.
    */
   async deleteAllGuests(): Promise<void> {
     const supabase = await createClient();
-    const nilUuid = "00000000-0000-0000-0000-000000000000";
 
-    const { error } = await supabase.from("guests").delete().neq("id", nilUuid);
+    const { error } = await supabase
+      .from("guests")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
 
     if (error) {
       console.error("Error deleting all guests:", error);
       throw new Error("Failed to delete all guests");
     }
-  },
-
-  async getGuestById(id: string): Promise<Guest | null> {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-      .from("guests")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      if (error.code === "PGRST116") {
-        return null;
-      }
-      console.error("Error fetching guest:", error);
-      throw new Error("Failed to fetch guest");
-    }
-
-    return data;
-  },
-
-  async getGuestByUuid(uuid: string): Promise<Guest | null> {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-      .from("guests")
-      .select("*")
-      .eq("uuid", uuid)
-      .single();
-
-    if (error) {
-      if (error.code === "PGRST116") {
-        return null;
-      }
-      console.error("Error fetching guest by UUID:", error);
-      throw new Error("Failed to fetch guest");
-    }
-
-    return data;
   },
 };

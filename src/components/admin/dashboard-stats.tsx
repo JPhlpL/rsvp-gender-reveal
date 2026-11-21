@@ -12,11 +12,11 @@ import {
 import { DashboardStatCard } from "./dashboard-stat-card";
 import { FilteredGuestTable } from "./filtered-guest-table";
 import type { GuestStatistics } from "@/utils/statistics";
-import type { Guest } from "@/types/guest";
+import type { GuestWithResponse } from "@/types/guest";
 
 interface DashboardStatsProps {
   stats: GuestStatistics;
-  guests: Guest[];
+  guests: GuestWithResponse[];
 }
 
 export type DashboardStatCardId =
@@ -46,7 +46,7 @@ export function DashboardStats({ stats, guests }: DashboardStatsProps) {
     setExpandedCard(expandedCard === cardType ? null : cardType);
   };
 
-  const getFilteredGuests = (type: DashboardStatCardId): Guest[] => {
+  const getFilteredGuests = (type: DashboardStatCardId): GuestWithResponse[] => {
     switch (type) {
       case "main_invited":
         return guests;
