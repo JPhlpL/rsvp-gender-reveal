@@ -7,7 +7,7 @@ import { PartyHeader } from "@/components/party/party-header";
 import { PartyIntro } from "@/components/party/party-intro";
 import { PartyVenue } from "@/components/party/party-venue";
 import { PrizesTeaser } from "@/components/party/prizes-teaser";
-import { GuestNotesCallout } from "@/components/party/guest-notes-callout";
+import { RsvpSection } from "@/components/party/rsvp-section";
 import { WearYourGuess } from "@/components/party/wear-your-guess";
 import { resolveInvitationView } from "@/lib/invitation-view";
 import {
@@ -55,13 +55,7 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
         <PartyVenue />
         <PrizesTeaser />
         <PartyDivider />
-        <section id="rsvp" className="px-4 py-10 sm:py-14">
-          <div className="mx-auto max-w-xl">
-            {/* Replaced by the RSVP section in Task 8. */}
-            <GuestNotesCallout notes={guest.notes} />
-            <p data-view={view.kind}>RSVP</p>
-          </div>
-        </section>
+        <RsvpSection guest={guest} settings={settings} view={view} slug={canonicalSlug} />
         <PartyDivider />
         <PartyClosing />
         <PartyFooter />
