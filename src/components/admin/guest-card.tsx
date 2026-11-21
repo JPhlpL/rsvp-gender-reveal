@@ -36,32 +36,10 @@ export function GuestCard({ guest }: GuestCardProps) {
     );
   };
 
-  const getTypeBadge = (type: string) => {
-    const typeColors = {
-      standard: "bg-gray-50 text-gray-700 border-gray-200",
-      vip: "bg-amber-50 text-amber-700 border-amber-200",
-    };
-    const typeLabels = {
-      standard: "Standard",
-      vip: "VIP",
-    };
-
-    return (
-      <span
-        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium ${
-          typeColors[type as keyof typeof typeColors]
-        }`}
-      >
-        {typeLabels[type as keyof typeof typeLabels]}
-      </span>
-    );
-  };
-
   const cardHeader = (
     <>
       <h3 className="font-semibold text-sm mb-1">{guest.name}</h3>
       <div className="flex items-center gap-1.5">
-        {getTypeBadge(guest.guest_type)}
         {getStatusBadge(guest.attendance_status)}
       </div>
     </>
@@ -79,14 +57,6 @@ export function GuestCard({ guest }: GuestCardProps) {
   return (
     <BaseCard header={cardHeader} footer={cardFooter} compact>
       <div className="space-y-1">
-        {/* Plus Guests */}
-        {guest.number_of_plus_invited_guests !== null && guest.number_of_plus_invited_guests > 0 && (
-          <div className="text-xs">
-            <span className="text-muted-foreground">Plus Guests: </span>
-            <span className="font-semibold">{guest.number_of_plus_invited_guests}</span>
-          </div>
-        )}
-
         {/* Created Date */}
         <div className="text-[10px] text-muted-foreground">
           Created: {new Date(guest.created_at).toLocaleDateString()}

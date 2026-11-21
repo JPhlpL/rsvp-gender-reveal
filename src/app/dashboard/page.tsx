@@ -35,15 +35,6 @@ export default async function DashboardPage() {
               Main guests who responded
             </p>
           </div>
-          <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">VIP Guests</p>
-            <p className="text-3xl font-bold text-amber-700">
-              {guests.filter((g) => g.guest_type === "vip").length}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              With plus guests invited
-            </p>
-          </div>
         </div>
       </div>
     </div>

@@ -9,13 +9,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { BaseModal } from "@/components/application/modals/base-modal";
 import { createGuestSchema, type CreateGuestFormData } from "@/schemas/guest";
 import { createGuestAction } from "@/actions/guest";
@@ -28,7 +21,6 @@ export function CreateGuestModal() {
     register,
     formState: { errors },
     reset,
-    setValue,
   } = useForm<CreateGuestFormData>({
     resolver: zodResolver(createGuestSchema),
     mode: "onBlur",
@@ -36,8 +28,6 @@ export function CreateGuestModal() {
       name: "",
       email: "",
       phone: "",
-      guest_type: "standard",
-      number_of_plus_invited_guests: null,
       notes: "",
     },
   });
@@ -63,7 +53,7 @@ export function CreateGuestModal() {
         </Button>
       }
       title="Add New Guest"
-      description="Create a new guest entry for your wedding RSVP list."
+      description="Create a new guest entry for the party guest list."
       open={open}
       onOpenChange={setOpen}
       formAction={createGuestAction}
@@ -109,53 +99,10 @@ export function CreateGuestModal() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="guest_type">Guest Type</Label>
-          <Select
-            defaultValue="standard"
-            onValueChange={(value) =>
-              setValue("guest_type", value as "standard" | "vip")
-            }
-          >
-            <SelectTrigger id="guest_type" className="w-full">
-              <SelectValue placeholder="Select guest type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="standard">Standard</SelectItem>
-              <SelectItem value="vip">VIP</SelectItem>
-            </SelectContent>
-          </Select>
-          <input type="hidden" {...register("guest_type")} />
-        </div>
-
-        {/* Number of Plus Invited Guests - Show for both Standard and VIP */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="number_of_plus_invited_guests">
-            Number of Plus Guests (Optional)
-          </Label>
-          <Input
-            id="number_of_plus_invited_guests"
-            type="number"
-            min="0"
-            placeholder="0"
-            {...register("number_of_plus_invited_guests", {
-              valueAsNumber: true,
-            })}
-          />
-          <p className="text-xs text-muted-foreground">
-            How many additional guests can this person bring? Leave as 0 if none.
-          </p>
-          {errors.number_of_plus_invited_guests && (
-            <p className="text-xs text-destructive">
-              {errors.number_of_plus_invited_guests.message}
-            </p>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">Note for this guest</Label>
           <Input
             id="notes"
-            placeholder="Admin notes (optional)"
+            placeholder="Shown on their invitation (optional)"
             {...register("notes")}
           />
           {errors.notes && (

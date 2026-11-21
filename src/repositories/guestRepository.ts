@@ -65,7 +65,7 @@ export const guestRepository = {
   },
 
   /**
-   * Remove every guest row. `responds` rows CASCADE-delete via FK (`ON DELETE CASCADE`).
+   * Remove every guest row. `responses` rows CASCADE-delete via FK (`ON DELETE CASCADE`).
    * Uses `.neq('id', …)` so PostgREST applies a filter (required for bulk delete).
    */
   async deleteAllGuests(): Promise<void> {

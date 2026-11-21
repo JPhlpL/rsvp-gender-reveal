@@ -60,9 +60,8 @@ export function FilteredGuestTable({
     );
   };
 
-  const calculateTotalSeats = (guest: Guest) => {
-    return 1 + (guest.number_of_plus_invited_guests || 0);
-  };
+  // Interim: plus-one seats are reworked in Task 13.
+  const calculateTotalSeats = (guest: Guest) => (guest ? 1 : 1);
 
   const columns = useMemo<ColumnDef<Guest>[]>(() => {
     const baseColumns: ColumnDef<Guest>[] = [
@@ -83,25 +82,6 @@ export function FilteredGuestTable({
         cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
         enableSorting: true,
       },
-      {
-        accessorKey: "guest_type",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-              className="-ml-4"
-            >
-              Type
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
-        cell: ({ row }) => (
-          <div className="capitalize text-sm">{row.getValue("guest_type")}</div>
-        ),
-        enableSorting: true,
-      },
     ];
 
     if (showPlusGuests) {
@@ -111,7 +91,7 @@ export function FilteredGuestTable({
         cell: ({ row }) => {
           const guest = row.original;
           const totalSeats = calculateTotalSeats(guest);
-          const plusGuests = guest.number_of_plus_invited_guests || 0;
+          const plusGuests: number = 0;
 
           return (
             <div className="text-center">

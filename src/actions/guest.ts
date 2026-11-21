@@ -10,22 +10,25 @@ export type GuestActionState = {
   success?: boolean;
 };
 
+function readGuestFields(formData: FormData) {
+  return {
+    name: formData.get("name") ?? "",
+    email: formData.get("email") ?? "",
+    phone: formData.get("phone") ?? "",
+    notes: formData.get("notes") ?? "",
+  };
+}
+
+function revalidateDashboard() {
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/guests");
+}
+
 export async function createGuestAction(
   _prevState: GuestActionState,
   formData: FormData
 ): Promise<GuestActionState> {
-  const rawData = {
-    name: formData.get("name"),
-    email: formData.get("email"),
-    phone: formData.get("phone"),
-    guest_type: formData.get("guest_type") || "standard",
-    number_of_plus_invited_guests: formData.get("number_of_plus_invited_guests")
-      ? parseInt(formData.get("number_of_plus_invited_guests") as string, 10)
-      : null,
-    notes: formData.get("notes"),
-  };
-
-  const parsed = createGuestSchema.safeParse(rawData);
+  const parsed = createGuestSchema.safeParse(readGuestFields(formData));
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
@@ -36,12 +39,10 @@ export async function createGuestAction(
       name: parsed.data.name,
       email: parsed.data.email || null,
       phone: parsed.data.phone || null,
-      guest_type: parsed.data.guest_type,
-      number_of_plus_invited_guests: parsed.data.number_of_plus_invited_guests,
       notes: parsed.data.notes || null,
     });
 
-    revalidatePath("/dashboard");
+    revalidateDashboard();
     return { success: true };
   } catch (error) {
     console.error("Error creating guest:", error);
@@ -53,19 +54,10 @@ export async function updateGuestAction(
   _prevState: GuestActionState,
   formData: FormData
 ): Promise<GuestActionState> {
-  const rawData = {
+  const parsed = updateGuestSchema.safeParse({
     id: formData.get("id"),
-    name: formData.get("name"),
-    email: formData.get("email"),
-    phone: formData.get("phone"),
-    guest_type: formData.get("guest_type") || "standard",
-    number_of_plus_invited_guests: formData.get("number_of_plus_invited_guests")
-      ? parseInt(formData.get("number_of_plus_invited_guests") as string, 10)
-      : null,
-    notes: formData.get("notes"),
-  };
-
-  const parsed = updateGuestSchema.safeParse(rawData);
+    ...readGuestFields(formData),
+  });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
@@ -76,12 +68,10 @@ export async function updateGuestAction(
       name: parsed.data.name,
       email: parsed.data.email || null,
       phone: parsed.data.phone || null,
-      guest_type: parsed.data.guest_type,
-      number_of_plus_invited_guests: parsed.data.number_of_plus_invited_guests,
       notes: parsed.data.notes || null,
     });
 
-    revalidatePath("/dashboard");
+    revalidateDashboard();
     return { success: true };
   } catch (error) {
     console.error("Error updating guest:", error);
@@ -94,8 +84,7 @@ export async function deleteGuestAction(
 ): Promise<GuestActionState> {
   try {
     await guestRepository.deleteGuest(id);
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/guests");
+    revalidateDashboard();
     return { success: true };
   } catch (error) {
     console.error("Error deleting guest:", error);
@@ -106,8 +95,7 @@ export async function deleteGuestAction(
 export async function deleteAllGuestsAction(): Promise<GuestActionState> {
   try {
     await guestRepository.deleteAllGuests();
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/guests");
+    revalidateDashboard();
     return { success: true };
   } catch (error) {
     console.error("Error deleting all guests:", error);

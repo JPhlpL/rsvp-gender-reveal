@@ -1,40 +1,22 @@
 import { z } from "zod";
 
-export const createGuestSchema = z.object({
-  name: z.string().min(1, "Name is required").max(255, "Name is too long"),
+const guestFields = {
+  name: z.string().trim().min(1, "Name is required").max(255, "Name is too long"),
   email: z
     .string()
+    .trim()
     .email("Invalid email address")
     .optional()
     .or(z.literal("")),
-  phone: z.string().optional().or(z.literal("")),
-  guest_type: z.enum(["standard", "vip"]),
-  number_of_plus_invited_guests: z
-    .number()
-    .int()
-    .min(0, "Must be a positive number")
-    .optional()
-    .nullable(),
-  notes: z.string().optional().or(z.literal("")),
-});
+  phone: z.string().trim().max(50, "Phone is too long").optional().or(z.literal("")),
+  notes: z.string().trim().max(1000, "Notes are too long").optional().or(z.literal("")),
+};
+
+export const createGuestSchema = z.object(guestFields);
 
 export const updateGuestSchema = z.object({
   id: z.string().uuid(),
-  name: z.string().min(1, "Name is required").max(255, "Name is too long"),
-  email: z
-    .string()
-    .email("Invalid email address")
-    .optional()
-    .or(z.literal("")),
-  phone: z.string().optional().or(z.literal("")),
-  guest_type: z.enum(["standard", "vip"]),
-  number_of_plus_invited_guests: z
-    .number()
-    .int()
-    .min(0, "Must be a positive number")
-    .optional()
-    .nullable(),
-  notes: z.string().optional().or(z.literal("")),
+  ...guestFields,
 });
 
 export type CreateGuestFormData = z.infer<typeof createGuestSchema>;

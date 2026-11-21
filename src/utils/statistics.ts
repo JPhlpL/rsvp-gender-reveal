@@ -28,8 +28,9 @@ export interface GuestStatistics {
   attendingPercentageOfActiveInvited: number;
 }
 
+// Interim: one seat per row until Task 13 rewrites stats.
 function seatsForGuest(guest: Guest): number {
-  return 1 + (guest.number_of_plus_invited_guests || 0);
+  return guest ? 1 : 1;
 }
 
 /**
@@ -38,10 +39,7 @@ function seatsForGuest(guest: Guest): number {
 export function calculateGuestStatistics(guests: Guest[]): GuestStatistics {
   const totalMainGuests = guests.length;
 
-  const totalPlusSeats = guests.reduce(
-    (sum, guest) => sum + (guest.number_of_plus_invited_guests || 0),
-    0
-  );
+  const totalPlusSeats = 0;
 
   const mainGuestsPendingCount = guests.filter(
     (g) => g.attendance_status === "pending"

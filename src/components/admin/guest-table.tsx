@@ -56,31 +56,6 @@ export function GuestTable({ guests }: GuestTableProps) {
         ),
       },
       {
-        accessorKey: "guest_type",
-        header: () => <div className="text-center">Type</div>,
-        cell: ({ row }) => {
-          const type = row.getValue("guest_type") as string;
-          const typeColors = {
-            standard: "bg-gray-50 text-gray-700 border-gray-200",
-            vip: "bg-amber-50 text-amber-700 border-amber-200",
-          };
-          const typeLabels = {
-            standard: "Standard",
-            vip: "VIP",
-          };
-
-          return (
-            <div className="flex justify-center">
-              <span
-                className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium ${typeColors[type as keyof typeof typeColors]}`}
-              >
-                {typeLabels[type as keyof typeof typeLabels]}
-              </span>
-            </div>
-          );
-        },
-      },
-      {
         accessorKey: "email",
         header: () => <div className="text-center">Email</div>,
         cell: ({ row }) => {
@@ -145,20 +120,6 @@ export function GuestTable({ guests }: GuestTableProps) {
           const a = rowA.getValue(columnId) as string;
           const b = rowB.getValue(columnId) as string;
           return (order[a] ?? 99) - (order[b] ?? 99);
-        },
-      },
-      {
-        accessorKey: "number_of_plus_invited_guests",
-        header: () => <div className="text-center">Plus Guests</div>,
-        cell: ({ row }) => {
-          const numberInvited = row.getValue(
-            "number_of_plus_invited_guests"
-          ) as number | null;
-
-          if (numberInvited !== null) {
-            return <div className="text-center">{numberInvited}</div>;
-          }
-          return <div className="text-center">0</div>;
         },
       },
       {

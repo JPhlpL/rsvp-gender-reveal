@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -44,11 +39,9 @@ export type Database = {
           attendance_status: Database["public"]["Enums"]["attendance_status"]
           created_at: string
           email: string | null
-          guest_type: Database["public"]["Enums"]["guest_type"]
           id: string
           name: string
           notes: string | null
-          number_of_plus_invited_guests: number | null
           phone: string | null
           submitted_at: string | null
           updated_at: string
@@ -58,11 +51,9 @@ export type Database = {
           attendance_status?: Database["public"]["Enums"]["attendance_status"]
           created_at?: string
           email?: string | null
-          guest_type?: Database["public"]["Enums"]["guest_type"]
           id?: string
           name: string
           notes?: string | null
-          number_of_plus_invited_guests?: number | null
           phone?: string | null
           submitted_at?: string | null
           updated_at?: string
@@ -72,11 +63,9 @@ export type Database = {
           attendance_status?: Database["public"]["Enums"]["attendance_status"]
           created_at?: string
           email?: string | null
-          guest_type?: Database["public"]["Enums"]["guest_type"]
           id?: string
           name?: string
           notes?: string | null
-          number_of_plus_invited_guests?: number | null
           phone?: string | null
           submitted_at?: string | null
           updated_at?: string
@@ -84,43 +73,76 @@ export type Database = {
         }
         Relationships: []
       }
-      responds: {
+      responses: {
         Row: {
           created_at: string
-          decline_reason: string | null
+          guess: Database["public"]["Enums"]["rsvp_guess"] | null
           guest_id: string
-          is_accept_rsvp: boolean
+          is_attending: boolean
+          message: string | null
           name: string
-          remarks: string | null
+          plus_one_approved_count: number | null
+          plus_one_count: number
+          plus_one_names: string | null
+          plus_one_status: Database["public"]["Enums"]["plus_one_status"]
           updated_at: string
         }
         Insert: {
           created_at?: string
-          decline_reason?: string | null
+          guess?: Database["public"]["Enums"]["rsvp_guess"] | null
           guest_id: string
-          is_accept_rsvp: boolean
+          is_attending: boolean
+          message?: string | null
           name: string
-          remarks?: string | null
+          plus_one_approved_count?: number | null
+          plus_one_count?: number
+          plus_one_names?: string | null
+          plus_one_status?: Database["public"]["Enums"]["plus_one_status"]
           updated_at?: string
         }
         Update: {
           created_at?: string
-          decline_reason?: string | null
+          guess?: Database["public"]["Enums"]["rsvp_guess"] | null
           guest_id?: string
-          is_accept_rsvp?: boolean
+          is_attending?: boolean
+          message?: string | null
           name?: string
-          remarks?: string | null
+          plus_one_approved_count?: number | null
+          plus_one_count?: number
+          plus_one_names?: string | null
+          plus_one_status?: Database["public"]["Enums"]["plus_one_status"]
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "responds_guest_id_fkey"
+            foreignKeyName: "responses_guest_id_fkey"
             columns: ["guest_id"]
             isOneToOne: true
             referencedRelation: "guests"
             referencedColumns: ["id"]
           },
         ]
+      }
+      settings: {
+        Row: {
+          id: number
+          rsvp_closed: boolean
+          rsvp_deadline: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          rsvp_closed?: boolean
+          rsvp_deadline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          rsvp_closed?: boolean
+          rsvp_deadline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -131,7 +153,8 @@ export type Database = {
     }
     Enums: {
       attendance_status: "pending" | "attending" | "not_attending"
-      guest_type: "standard" | "vip"
+      plus_one_status: "none" | "pending" | "approved" | "declined"
+      rsvp_guess: "girl" | "boy"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -263,7 +286,9 @@ export const Constants = {
   public: {
     Enums: {
       attendance_status: ["pending", "attending", "not_attending"],
-      guest_type: ["standard", "vip"],
+      plus_one_status: ["none", "pending", "approved", "declined"],
+      rsvp_guess: ["girl", "boy"],
     },
   },
 } as const
+

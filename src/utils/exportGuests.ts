@@ -4,11 +4,9 @@ import { EXPORT_GUESTS_DEFAULT_BASENAME } from "@/utils/constants";
 
 interface ExportGuestData {
   Name: string;
-  "Guest Type": string;
   Email: string;
   Phone: string;
   "Attendance Status": string;
-  "Plus Guests": number;
   "Created Date": string;
   "Submitted Date": string;
   Notes: string;
@@ -21,7 +19,6 @@ export function exportGuestsToExcel(
   // Format data for Excel
   const formattedData: ExportGuestData[] = guests.map((guest) => ({
     Name: guest.name,
-    "Guest Type": guest.guest_type === "vip" ? "VIP" : "Standard",
     Email: guest.email || "",
     Phone: guest.phone || "",
     "Attendance Status":
@@ -30,7 +27,6 @@ export function exportGuestsToExcel(
         : guest.attendance_status === "not_attending"
           ? "Not Attending"
           : "Pending",
-    "Plus Guests": guest.number_of_plus_invited_guests || 0,
     "Created Date": new Date(guest.created_at).toLocaleDateString(),
     "Submitted Date": guest.submitted_at
       ? new Date(guest.submitted_at).toLocaleDateString()
@@ -44,11 +40,9 @@ export function exportGuestsToExcel(
   // Set column widths for better readability
   const columnWidths = [
     { wch: 25 }, // Name
-    { wch: 12 }, // Guest Type
     { wch: 30 }, // Email
     { wch: 15 }, // Phone
     { wch: 18 }, // Attendance Status
-    { wch: 12 }, // Plus Guests
     { wch: 15 }, // Created Date
     { wch: 15 }, // Submitted Date
     { wch: 30 }, // Notes

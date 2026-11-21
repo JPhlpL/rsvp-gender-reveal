@@ -9,13 +9,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { BaseModal } from "@/components/application/modals/base-modal";
 import { updateGuestSchema, type UpdateGuestFormData } from "@/schemas/guest";
 import { updateGuestAction } from "@/actions/guest";
@@ -33,8 +26,6 @@ export function EditGuestModal({ guest }: EditGuestModalProps) {
     register,
     formState: { errors },
     reset,
-    watch,
-    setValue,
   } = useForm<UpdateGuestFormData>({
     resolver: zodResolver(updateGuestSchema),
     mode: "onBlur",
@@ -43,13 +34,9 @@ export function EditGuestModal({ guest }: EditGuestModalProps) {
       name: guest.name,
       email: guest.email || "",
       phone: guest.phone || "",
-      guest_type: guest.guest_type || "standard",
-      number_of_plus_invited_guests: guest.number_of_plus_invited_guests,
       notes: guest.notes || "",
     },
   });
-
-  const guestType = watch("guest_type");
 
   // Reset form when modal opens with fresh guest data
   const handleOpenChange = (newOpen: boolean) => {
@@ -59,8 +46,6 @@ export function EditGuestModal({ guest }: EditGuestModalProps) {
         name: guest.name,
         email: guest.email || "",
         phone: guest.phone || "",
-        guest_type: guest.guest_type || "standard",
-        number_of_plus_invited_guests: guest.number_of_plus_invited_guests,
         notes: guest.notes || "",
       });
     }
@@ -135,54 +120,10 @@ export function EditGuestModal({ guest }: EditGuestModalProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="edit-guest_type">Guest Type</Label>
-          <Select
-            key={`guest-type-${guest.id}-${open}`}
-            value={guestType}
-            onValueChange={(value) =>
-              setValue("guest_type", value as "standard" | "vip")
-            }
-          >
-            <SelectTrigger id="edit-guest_type" className="w-full">
-              <SelectValue placeholder="Select guest type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="standard">Standard</SelectItem>
-              <SelectItem value="vip">VIP</SelectItem>
-            </SelectContent>
-          </Select>
-          <input type="hidden" {...register("guest_type")} />
-        </div>
-
-        {/* Number of Plus Invited Guests - Show for both Standard and VIP */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="edit-number_of_plus_invited_guests">
-            Number of Plus Guests (Optional)
-          </Label>
-          <Input
-            id="edit-number_of_plus_invited_guests"
-            type="number"
-            min="0"
-            placeholder="0"
-            {...register("number_of_plus_invited_guests", {
-              valueAsNumber: true,
-            })}
-          />
-          <p className="text-xs text-muted-foreground">
-            How many additional guests can this person bring? Leave as 0 if none.
-          </p>
-          {errors.number_of_plus_invited_guests && (
-            <p className="text-xs text-destructive">
-              {errors.number_of_plus_invited_guests.message}
-            </p>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="edit-notes">Notes</Label>
+          <Label htmlFor="edit-notes">Note for this guest</Label>
           <Input
             id="edit-notes"
-            placeholder="Admin notes (optional)"
+            placeholder="Shown on their invitation (optional)"
             {...register("notes")}
           />
           {errors.notes && (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { FileText } from "lucide-react";
 import {
   Dialog,
@@ -13,34 +13,50 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { Guest } from "@/types/guest";
-import { fetchRespondByGuestIdAction } from "@/actions/respond";
+import type { GuestResponse } from "@/types/response";
+import { fetchResponseAction } from "@/actions/response";
 
 interface ViewResponseModalProps {
   guest: Guest;
 }
 
+const PLUS_ONE_STATUS_LABEL: Record<GuestResponse["plus_one_status"], string> = {
+  none: "None requested",
+  pending: "Waiting for approval",
+  approved: "Approved",
+  declined: "Declined",
+};
+
+function formatManila(iso: string): string {
+  return new Date(iso).toLocaleString("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Manila",
+  });
+}
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label className="font-semibold">{label}</Label>
+      <div className="text-sm">{children}</div>
+    </div>
+  );
+}
+
 export function ViewResponseModal({ guest }: ViewResponseModalProps) {
   const [open, setOpen] = useState(false);
-  const [respond, setRespond] = useState<{
-    name: string;
-    decline_reason: string | null;
-    remarks: string | null;
-  } | null>(null);
+  const [response, setResponse] = useState<GuestResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Determine if there's a response to show
   const hasResponse = guest.submitted_at !== null;
 
-  // Fetch respond data when modal opens
   const handleOpenChange = async (isOpen: boolean) => {
     setOpen(isOpen);
-    
-    if (isOpen && hasResponse && !respond) {
+
+    if (isOpen && hasResponse) {
       setLoading(true);
-      const { respond: fetchedRespond } = await fetchRespondByGuestIdAction(guest.id);
-      if (fetchedRespond) {
-        setRespond(fetchedRespond);
-      }
+      setResponse(await fetchResponseAction(guest.id));
       setLoading(false);
     }
   };
@@ -52,99 +68,61 @@ export function ViewResponseModal({ guest }: ViewResponseModalProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" aria-label={`View ${guest.name}'s answer`}>
           <FileText className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Guest Response</DialogTitle>
-          <DialogDescription>
-            RSVP details for {guest.name}
-          </DialogDescription>
+          <DialogTitle>Guest Answer</DialogTitle>
+          <DialogDescription>RSVP details for {guest.name}</DialogDescription>
         </DialogHeader>
 
-        {loading ? (
-          <div className="flex justify-center py-8">
-            <p className="text-sm text-muted-foreground">Loading...</p>
-          </div>
+        {loading || !response ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            {loading ? "Loading..." : "No answer found."}
+          </p>
         ) : (
           <div className="flex flex-col gap-4 py-4">
-            {/* Respondent Name */}
-            {respond && (
-              <div className="flex flex-col gap-2">
-                <Label className="font-semibold">Respondent Name</Label>
-                <p className="text-sm">{respond.name}</p>
-              </div>
+            <Field label="Name they gave">{response.name}</Field>
+            <Field label="Coming?">
+              {response.is_attending ? "Yes, attending" : "Not attending"}
+            </Field>
+            {response.is_attending && (
+              <>
+                <Field label="Guess">
+                  {response.guess === "girl"
+                    ? "Girl (pink)"
+                    : response.guess === "boy"
+                      ? "Boy (blue)"
+                      : "—"}
+                </Field>
+                <Field label="Plus-ones">
+                  {response.plus_one_count > 0 ? (
+                    <>
+                      +{response.plus_one_count}
+                      {response.plus_one_names ? `: ${response.plus_one_names}` : ""}
+                      {" · "}
+                      {PLUS_ONE_STATUS_LABEL[response.plus_one_status]}
+                      {response.plus_one_status === "approved" &&
+                        ` (${response.plus_one_approved_count ?? 0} allowed)`}
+                    </>
+                  ) : (
+                    "None"
+                  )}
+                </Field>
+              </>
             )}
-
-            {/* Attendance Status */}
-            <div className="flex flex-col gap-2">
-              <Label className="font-semibold">Attendance Status</Label>
-              <div>
-                {guest.attendance_status === "attending" && (
-                  <span className="inline-flex items-center rounded-full border bg-green-50 text-green-700 border-green-200 px-3 py-1 text-sm font-medium">
-                    Attending
-                  </span>
-                )}
-                {guest.attendance_status === "not_attending" && (
-                  <span className="inline-flex items-center rounded-full border bg-red-50 text-red-700 border-red-200 px-3 py-1 text-sm font-medium">
-                    Not Attending
-                  </span>
-                )}
-                {guest.attendance_status === "pending" && (
-                  <span className="inline-flex items-center rounded-full border bg-beige-50 text-beige-700 border-beige-200 px-3 py-1 text-sm font-medium">
-                    Pending
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Submitted At */}
-            <div className="flex flex-col gap-2">
-              <Label className="font-semibold">Submitted At</Label>
-              <p className="text-sm text-muted-foreground">
-                {guest.submitted_at
-                  ? new Date(guest.submitted_at).toLocaleString()
-                  : "Not submitted yet"}
-              </p>
-            </div>
-
-            {/* Decline Reason (only if not attending) */}
-            {guest.attendance_status === "not_attending" && respond && (
-              <div className="flex flex-col gap-2">
-                <Label className="font-semibold">Decline Reason</Label>
-                <div className="rounded-md border bg-muted/50 p-3 min-h-[60px]">
-                  <p className="text-sm">
-                    {respond.decline_reason ? (
-                      respond.decline_reason
-                    ) : (
-                      <span className="text-muted-foreground italic">
-                        No reason provided
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Remarks */}
-            {respond && (
-              <div className="flex flex-col gap-2">
-                <Label className="font-semibold">Remarks</Label>
-                <div className="rounded-md border bg-muted/50 p-3 min-h-[60px]">
-                  <p className="text-sm">
-                    {respond.remarks ? (
-                      respond.remarks
-                    ) : (
-                      <span className="text-muted-foreground italic">
-                        No remarks provided
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </div>
-            )}
+            <Field label="Message">
+              {response.message ? (
+                <span className="whitespace-pre-wrap">{response.message}</span>
+              ) : (
+                <span className="italic text-muted-foreground">No message</span>
+              )}
+            </Field>
+            <Field label="Answered at (Manila)">
+              {guest.submitted_at ? formatManila(guest.submitted_at) : "—"}
+            </Field>
           </div>
         )}
       </DialogContent>
