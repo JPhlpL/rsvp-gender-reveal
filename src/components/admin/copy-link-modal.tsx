@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Guest } from "@/types/guest";
-import { confirmationPathSegment } from "@/lib/confirmation-path";
+import { rsvpPathSegment } from "@/lib/rsvp-path";
 import { DEFAULT_PUBLIC_APP_URL } from "@/utils/constants";
 
 interface CopyLinkModalProps {
@@ -28,7 +28,7 @@ export function CopyLinkModal({ guest }: CopyLinkModalProps) {
 
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL || DEFAULT_PUBLIC_APP_URL;
-  const invitationLink = `${baseUrl}/confirmation/${confirmationPathSegment(guest.name, guest.uuid)}`;
+  const invitationLink = `${baseUrl}/rsvp/${rsvpPathSegment(guest.name, guest.uuid)}`;
 
   const handleCopy = async () => {
     try {
