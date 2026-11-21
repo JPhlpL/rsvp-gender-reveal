@@ -46,3 +46,18 @@ ADMIN_EMAILS=you@example.com
 ## Private project
 
 All rights reserved.
+
+## Local services and ports
+
+- App: http://localhost:3005 (port 3000 is used by another app on this machine).
+- Supabase (local, via Docker): API 54421, DB 54422, Studio http://127.0.0.1:54423, mail catcher 54424. These avoid the default 543xx ports used by another local Supabase project. Storage and analytics are turned off.
+- Sample guests are seeded by `npx supabase db reset` (this also wipes users — re-run `npm run admin:create` afterwards).
+
+## Before sending invitations
+
+1. **Baby photos:** save them as `public/party/mini-vera.jpg` and `public/party/mini-philip.jpg` (portrait works best). Until then the frames show a cartoon placeholder.
+2. **Deploy:** create a cloud Supabase project (the free plan allows 2 active projects — pause the wedding one if needed), apply `supabase/migrations/`, disable sign-ups, and create the admin users. Deploy to Vercel with the env vars from `.env.example`.
+3. **Real address:** set `NEXT_PUBLIC_APP_URL` to the final domain *before* copying any guest links — copied links keep whatever address was set when copied. Links copied on localhost won't work for guests.
+4. **Admins:** set `ADMIN_EMAILS` to Philip's and Vera's emails.
+5. **Email notifications (optional):** set the EmailJS variables. Template fields: `guest_name`, `respondent_name`, `attendance_status`, `guess`, `plus_one_request`, `message`, `submitted_at`, `dashboard_url`, `to_email`.
+6. **Music (optional):** not included; add a song and a player if wanted.

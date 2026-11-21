@@ -1,7 +1,7 @@
 # Gender Reveal & Baby Shower RSVP: Design
 
 - **Date:** 2026-11-21
-- **Status:** Draft, awaiting the couple's approval. Nothing built yet.
+- **Status:** Approved 2026-11-21; implemented on branch `feat/initial-build`.
 - **Base code:** `d:\Developments\Projects\nextjs\rsvp-wedding` (the couple's wedding RSVP site)
 - **New repo (to be created):** `d:\Developments\Projects\nextjs\rsvp-gender-reveal`. This file moves to `docs/superpowers/specs/` there.
 
