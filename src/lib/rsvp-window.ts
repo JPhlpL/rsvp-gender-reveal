@@ -78,3 +78,13 @@ export function formatDeadlineManila(iso: string): string {
 
   return `${formatDeadlineDateManila(iso)}, ${time}`;
 }
+
+/** One-line RSVP status for the admin Settings card. */
+export function describeRsvpStatus(settings: RsvpSettings, now: Date): string {
+  const reason = rsvpClosedReason(settings, now);
+  if (reason === "manual") return "Closed manually";
+  if (!settings.rsvp_deadline) return "Open — no deadline";
+
+  const when = `${formatDeadlineManila(settings.rsvp_deadline)} (Manila)`;
+  return reason === "deadline" ? `Closed — deadline passed ${when}` : `Open until ${when}`;
+}

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   deadlineFromManilaDate,
+  describeRsvpStatus,
   formatDeadlineDateManila,
   formatDeadlineManila,
   isRsvpOpen,
@@ -63,6 +64,32 @@ describe("manilaDateFromDeadline", () => {
 
   it("handles the UTC form Postgres returns", () => {
     expect(manilaDateFromDeadline("2026-12-01T15:59:59+00:00")).toBe("2026-12-01");
+  });
+});
+
+describe("describeRsvpStatus", () => {
+  it("says until when RSVPs are open", () => {
+    expect(describeRsvpStatus(s, new Date("2026-11-21Z"))).toBe(
+      "Open until Tuesday, December 1, 11:59 PM (Manila)"
+    );
+  });
+
+  it("says when the deadline passed", () => {
+    expect(describeRsvpStatus(s, new Date("2026-12-02T00:00:00+08:00"))).toBe(
+      "Closed — deadline passed Tuesday, December 1, 11:59 PM (Manila)"
+    );
+  });
+
+  it("says closed manually when the switch is on", () => {
+    expect(describeRsvpStatus({ ...s, rsvp_closed: true }, new Date("2026-11-21Z"))).toBe(
+      "Closed manually"
+    );
+  });
+
+  it("says open with no deadline", () => {
+    expect(describeRsvpStatus({ ...s, rsvp_deadline: null }, new Date("2026-11-21Z"))).toBe(
+      "Open — no deadline"
+    );
   });
 });
 

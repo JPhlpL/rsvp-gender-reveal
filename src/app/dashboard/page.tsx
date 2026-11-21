@@ -1,44 +1,31 @@
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { guestRepository } from "@/repositories/guestRepository";
+import { settingsRepository } from "@/repositories/settingsRepository";
 import { DashboardStats } from "@/components/admin/dashboard-stats";
+import { SettingsCard } from "@/components/admin/settings-card";
+import { describeRsvpStatus, isRsvpOpen, manilaDateFromDeadline } from "@/lib/rsvp-window";
 import { calculateGuestStatistics } from "@/utils/statistics";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   await requireAdmin();
-  const guests = await guestRepository.getAllGuestsWithResponses();
+  const [guests, settings] = await Promise.all([
+    guestRepository.getAllGuestsWithResponses(),
+    settingsRepository.getSettings(),
+  ]);
   const stats = calculateGuestStatistics(guests);
+  const now = new Date();
 
   return (
     <div className="space-y-6">
+      <SettingsCard
+        deadlineDate={settings.rsvp_deadline ? manilaDateFromDeadline(settings.rsvp_deadline) : ""}
+        rsvpClosed={settings.rsvp_closed}
+        statusLine={describeRsvpStatus(settings, now)}
+        isOpen={isRsvpOpen(settings, now)}
+      />
       <DashboardStats stats={stats} guests={guests} />
-
-      <div className="rounded-lg border bg-card p-6">
-        <h3 className="font-heading text-base font-medium mb-4">
-          Additional Metrics
-        </h3>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Response Rate</p>
-            <p className="text-3xl font-bold text-blue-700">
-              {stats.totalMainGuests > 0
-                ? Math.round(
-                    ((stats.totalMainGuests -
-                      guests.filter((g) => g.attendance_status === "pending")
-                        .length) /
-                      stats.totalMainGuests) *
-                      100
-                  )
-                : 0}
-              %
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Main guests who responded
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
