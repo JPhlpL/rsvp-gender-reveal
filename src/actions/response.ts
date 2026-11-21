@@ -32,7 +32,8 @@ export async function fetchResponseAction(
 
 /**
  * Record or edit a guest's answer from the dashboard (e.g. they replied on Messenger).
- * Ignores the RSVP deadline and the close switch; plus-ones entered here count as approved.
+ * Ignores the RSVP deadline and the close switch. A plus-one count set or changed here
+ * counts as approved; an unchanged count keeps the couple's earlier decision.
  */
 export async function saveAdminAnswerAction(
   guestId: string,
@@ -47,7 +48,11 @@ export async function saveAdminAnswerAction(
   }
 
   try {
-    await responseRepository.upsertAdminResponse(guestId, toAdminResponseFields(parsed.data));
+    const existing = await responseRepository.getResponseByGuestId(guestId);
+    await responseRepository.upsertAdminResponse(
+      guestId,
+      toAdminResponseFields(parsed.data, existing)
+    );
     revalidateDashboard();
     return { success: true };
   } catch (error) {

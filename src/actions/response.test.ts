@@ -117,6 +117,41 @@ describe("saveAdminAnswerAction", () => {
     );
   });
 
+  it("keeps the couple's plus-one decision when only the message changes", async () => {
+    vi.mocked(responseRepository.getResponseByGuestId).mockResolvedValue(
+      makeResponse({
+        is_attending: true,
+        guess: "girl",
+        plus_one_count: 2,
+        plus_one_names: "Dee, Eve",
+        plus_one_status: "declined",
+        plus_one_approved_count: 0,
+      })
+    );
+    await saveAdminAnswerAction(
+      "g2",
+      {},
+      form({
+        is_attending: "true",
+        name: "Two",
+        guess: "girl",
+        plus_one_count: "2",
+        plus_one_names: "Dee, Eve",
+        message: "See you!",
+      })
+    );
+    expect(responseRepository.getResponseByGuestId).toHaveBeenCalledWith("g2");
+    expect(responseRepository.upsertAdminResponse).toHaveBeenCalledWith(
+      "g2",
+      expect.objectContaining({
+        message: "See you!",
+        plus_one_count: 2,
+        plus_one_status: "declined",
+        plus_one_approved_count: 0,
+      })
+    );
+  });
+
   it("returns validation messages without saving", async () => {
     const result = await saveAdminAnswerAction("g2", {}, form({ is_attending: "true", name: "Two" }));
     expect(result).toEqual({ error: "Pick your guess: girl or boy" });

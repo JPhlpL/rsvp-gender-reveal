@@ -78,6 +78,54 @@ describe("toAdminResponseFields", () => {
       plus_one_approved_count: null,
     });
   });
+
+  describe("with the guest's existing answer", () => {
+    const existing = (
+      plus_one_status: "pending" | "approved" | "declined",
+      plus_one_approved_count: number | null
+    ) => ({ is_attending: true, plus_one_count: 3, plus_one_status, plus_one_approved_count });
+
+    it("keeps a pending request when the count is left as it was", () => {
+      expect(toAdminResponseFields(attending(3, "A, B, C"), existing("pending", null))).toMatchObject({
+        plus_one_status: "pending",
+        plus_one_approved_count: null,
+      });
+    });
+
+    it("keeps a partial approval when the count is left as it was", () => {
+      expect(toAdminResponseFields(attending(3, "A, B, C"), existing("approved", 2))).toMatchObject({
+        plus_one_status: "approved",
+        plus_one_approved_count: 2,
+      });
+    });
+
+    it("keeps a decline when the count is left as it was", () => {
+      expect(toAdminResponseFields(attending(3, "A, B, C"), existing("declined", 0))).toMatchObject({
+        plus_one_status: "declined",
+        plus_one_approved_count: 0,
+      });
+    });
+
+    it("approves a count the admin changed", () => {
+      expect(toAdminResponseFields(attending(2, "A, B"), existing("pending", null))).toMatchObject({
+        plus_one_status: "approved",
+        plus_one_approved_count: 2,
+      });
+    });
+
+    it("approves plus-ones for a guest who previously said no", () => {
+      const declinedInvite = {
+        is_attending: false,
+        plus_one_count: 0,
+        plus_one_status: "none" as const,
+        plus_one_approved_count: null,
+      };
+      expect(toAdminResponseFields(attending(1, "A"), declinedInvite)).toMatchObject({
+        plus_one_status: "approved",
+        plus_one_approved_count: 1,
+      });
+    });
+  });
 });
 
 describe("plusOneDecision", () => {

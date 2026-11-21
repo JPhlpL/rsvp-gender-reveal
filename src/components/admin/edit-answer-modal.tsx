@@ -46,7 +46,7 @@ export function EditAnswerModal({ guest }: { guest: GuestWithResponse }) {
         </Button>
       }
       title={title}
-      description={`For ${guest.name}. Plus-ones you enter here count as approved. The RSVP deadline doesn't apply.`}
+      description={`For ${guest.name}. Changing the plus-ones here approves them; leaving them as they are keeps your earlier decision. The RSVP deadline doesn't apply.`}
       open={open}
       onOpenChange={handleOpenChange}
       formAction={saveAdminAnswerAction.bind(null, guest.id)}

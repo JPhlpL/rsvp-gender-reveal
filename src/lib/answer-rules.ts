@@ -1,5 +1,9 @@
 import type { RsvpAnswer } from "@/schemas/rsvp";
-import type { GuestResponseInsert, GuestResponseUpdate } from "@/types/response";
+import type {
+  GuestResponse,
+  GuestResponseInsert,
+  GuestResponseUpdate,
+} from "@/types/response";
 
 type ResponseFields = Omit<GuestResponseInsert, "guest_id">;
 
@@ -43,11 +47,33 @@ export function toGuestResponseInsert(
   return { guest_id: guestId, ...fields };
 }
 
-/** An answer entered by an admin: plus-ones they enter are already decided. */
-export function toAdminResponseFields(answer: RsvpAnswer): ResponseFields {
+export type ExistingPlusOneState = Pick<
+  GuestResponse,
+  "is_attending" | "plus_one_count" | "plus_one_status" | "plus_one_approved_count"
+>;
+
+/**
+ * An answer entered by an admin. A plus-one count the admin sets or changes counts as
+ * approved; when attendance and the count are left as they were (e.g. only the message
+ * was fixed), the couple's earlier decision — pending, partial approval or decline — stays.
+ */
+export function toAdminResponseFields(
+  answer: RsvpAnswer,
+  existing?: ExistingPlusOneState | null
+): ResponseFields {
   const fields = baseFields(answer);
   const count = fields.plus_one_count ?? 0;
-  if (fields.is_attending && count > 0) {
+  if (!fields.is_attending || count === 0) return fields;
+
+  const unchanged =
+    existing?.is_attending === true &&
+    existing.plus_one_count === count &&
+    existing.plus_one_status !== "none";
+
+  if (unchanged) {
+    fields.plus_one_status = existing.plus_one_status;
+    fields.plus_one_approved_count = existing.plus_one_approved_count;
+  } else {
     fields.plus_one_status = "approved";
     fields.plus_one_approved_count = count;
   }
