@@ -1,7 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { plusOneDecision, type PlusOneDecisionInput } from "@/lib/answer-rules";
+import {
+  plusOneDecision,
+  toAdminResponseFields,
+  type PlusOneDecisionInput,
+} from "@/lib/answer-rules";
+import { parseRsvpFormData, rsvpAnswerSchema } from "@/schemas/rsvp";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { responseRepository } from "@/repositories/responseRepository";
 import type { GuestResponse } from "@/types/response";
@@ -22,6 +27,32 @@ export async function fetchResponseAction(
   } catch (error) {
     console.error("Error fetching response:", error);
     return null;
+  }
+}
+
+/**
+ * Record or edit a guest's answer from the dashboard (e.g. they replied on Messenger).
+ * Ignores the RSVP deadline and the close switch; plus-ones entered here count as approved.
+ */
+export async function saveAdminAnswerAction(
+  guestId: string,
+  _prevState: ResponseActionState,
+  formData: FormData
+): Promise<ResponseActionState> {
+  await requireAdmin();
+
+  const parsed = rsvpAnswerSchema.safeParse(parseRsvpFormData(formData));
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  try {
+    await responseRepository.upsertAdminResponse(guestId, toAdminResponseFields(parsed.data));
+    revalidateDashboard();
+    return { success: true };
+  } catch (error) {
+    console.error("Error saving admin answer:", error);
+    return { error: "Couldn't save the answer. Please try again." };
   }
 }
 

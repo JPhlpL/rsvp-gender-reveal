@@ -5,6 +5,7 @@ import { EditGuestModal } from "./edit-guest-modal";
 import { DeleteGuestDialog } from "./delete-guest-dialog";
 import { CopyLinkModal } from "./copy-link-modal";
 import { ViewResponseModal } from "./view-response-modal";
+import { EditAnswerModal } from "./edit-answer-modal";
 import type { GuestWithResponse } from "@/types/guest";
 import { guessLabel, plusOneSummary } from "@/lib/guest-labels";
 
@@ -49,6 +50,7 @@ export function GuestCard({ guest }: GuestCardProps) {
   const cardFooter = (
     <div className="flex items-center gap-1">
       <ViewResponseModal guest={guest} />
+      <EditAnswerModal guest={guest} />
       <CopyLinkModal guest={guest} />
       <EditGuestModal guest={guest} />
       <DeleteGuestDialog guest={guest} />

@@ -13,7 +13,13 @@ vi.mock("@/repositories/responseRepository", () => ({
 
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { responseRepository } from "@/repositories/responseRepository";
-import { decidePlusOneAction } from "./response";
+import { decidePlusOneAction, saveAdminAnswerAction } from "./response";
+
+function form(fields: Record<string, string>): FormData {
+  const fd = new FormData();
+  for (const [key, value] of Object.entries(fields)) fd.set(key, value);
+  return fd;
+}
 
 const pendingThree = makeResponse({
   plus_one_count: 3,
@@ -60,5 +66,60 @@ describe("decidePlusOneAction", () => {
     vi.mocked(responseRepository.getResponseByGuestId).mockResolvedValue(makeResponse());
     const result = await decidePlusOneAction("g1", { approve: false });
     expect(result).toEqual({ error: "This guest has no plus-one request." });
+  });
+});
+
+describe("saveAdminAnswerAction", () => {
+  beforeEach(() => {
+    vi.mocked(responseRepository.upsertAdminResponse).mockReset().mockResolvedValue(makeResponse());
+  });
+
+  it("checks the admin first", async () => {
+    await saveAdminAnswerAction("g2", {}, form({ is_attending: "false", name: "Dee" }));
+    expect(requireAdmin).toHaveBeenCalledTimes(1);
+  });
+
+  it("saves plus-ones entered by the admin as already approved", async () => {
+    const result = await saveAdminAnswerAction(
+      "g2",
+      {},
+      form({ is_attending: "true", name: "Two", guess: "boy", plus_one_count: "1", plus_one_names: "Dee" })
+    );
+    expect(result).toEqual({ success: true });
+    expect(responseRepository.upsertAdminResponse).toHaveBeenCalledWith(
+      "g2",
+      expect.objectContaining({
+        is_attending: true,
+        guess: "boy",
+        plus_one_count: 1,
+        plus_one_status: "approved",
+        plus_one_approved_count: 1,
+      })
+    );
+  });
+
+  it("clears guess and plus-ones when switched to not attending", async () => {
+    await saveAdminAnswerAction(
+      "g2",
+      {},
+      form({ is_attending: "false", name: "Two", guess: "boy", plus_one_count: "1", plus_one_names: "Dee" })
+    );
+    expect(responseRepository.upsertAdminResponse).toHaveBeenCalledWith(
+      "g2",
+      expect.objectContaining({
+        is_attending: false,
+        guess: null,
+        plus_one_count: 0,
+        plus_one_names: null,
+        plus_one_status: "none",
+        plus_one_approved_count: null,
+      })
+    );
+  });
+
+  it("returns validation messages without saving", async () => {
+    const result = await saveAdminAnswerAction("g2", {}, form({ is_attending: "true", name: "Two" }));
+    expect(result).toEqual({ error: "Pick your guess: girl or boy" });
+    expect(responseRepository.upsertAdminResponse).not.toHaveBeenCalled();
   });
 });
