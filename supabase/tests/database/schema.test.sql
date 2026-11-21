@@ -2,7 +2,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(12);
+select plan(16);
 
 -- Fixtures (run as the test owner, bypassing RLS)
 insert into guests (id, uuid, name)
@@ -77,9 +77,41 @@ select throws_ok(
 );
 
 reset role;
+
+-- A signed-in user who is NOT an admin (e.g. someone who signed up on their own
+-- because sign-ups were left on in a cloud project) gets nothing.
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"cccccccc-0000-4000-8000-000000000001","role":"authenticated","email":"stranger@example.com"}',
+  true
+);
 set local role authenticated;
 
-select lives_ok($$ select * from guests $$, 'authenticated can read guests');
+select is((select count(*) from guests), 0::bigint, 'signed-in non-admin sees no guests');
+select is((select count(*) from responses), 0::bigint, 'signed-in non-admin sees no responses');
+select throws_ok(
+  $$ insert into guests (name) values ('Sneaky') $$,
+  '42501', null,
+  'signed-in non-admin cannot add guests'
+);
+select results_eq(
+  $$ with changed as (update settings set rsvp_closed = true returning 1)
+     select count(*) from changed $$,
+  $$ values (0::bigint) $$,
+  'signed-in non-admin cannot change settings'
+);
+
+reset role;
+
+-- An admin created by scripts/create-admin.mjs carries app_metadata.role = 'admin'.
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"cccccccc-0000-4000-8000-000000000002","role":"authenticated","email":"admin@example.com","app_metadata":{"role":"admin"}}',
+  true
+);
+set local role authenticated;
+
+select ok((select count(*) from guests) >= 2, 'admin can read guests');
 
 reset role;
 

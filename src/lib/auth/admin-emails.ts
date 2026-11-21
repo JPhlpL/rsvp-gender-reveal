@@ -15,3 +15,18 @@ export function isAdminEmail(
   if (!email) return false;
   return allowlist.includes(email.trim().toLowerCase());
 }
+
+export type AdminCandidate = {
+  email?: string | null;
+  app_metadata?: Record<string, unknown> | null;
+} | null | undefined;
+
+/**
+ * True only for a user on the allowlist who was marked as admin by
+ * `npm run admin:create` (app_metadata.role = "admin"). The database's RLS policies
+ * check the same mark, so a listed user without it would see an empty dashboard.
+ */
+export function isAdminUser(user: AdminCandidate, allowlist: readonly string[]): boolean {
+  if (!user || user.app_metadata?.role !== "admin") return false;
+  return isAdminEmail(user.email, allowlist);
+}
