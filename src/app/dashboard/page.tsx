@@ -5,7 +5,6 @@ import { DashboardStats } from "@/components/admin/dashboard-stats";
 import { PlusOneRequestsCard } from "@/components/admin/plus-one-requests-card";
 import { SettingsCard } from "@/components/admin/settings-card";
 import { describeRsvpStatus, isRsvpOpen, manilaDateFromDeadline } from "@/lib/rsvp-window";
-import { calculateGuestStatistics } from "@/utils/statistics";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +14,6 @@ export default async function DashboardPage() {
     guestRepository.getAllGuestsWithResponses(),
     settingsRepository.getSettings(),
   ]);
-  const stats = calculateGuestStatistics(guests);
   const now = new Date();
 
   return (
@@ -27,7 +25,7 @@ export default async function DashboardPage() {
         isOpen={isRsvpOpen(settings, now)}
       />
       <PlusOneRequestsCard rows={guests} />
-      <DashboardStats stats={stats} guests={guests} />
+      <DashboardStats rows={guests} />
     </div>
   );
 }

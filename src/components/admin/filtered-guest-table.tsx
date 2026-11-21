@@ -15,11 +15,11 @@ import {
 import { BaseTable } from "@/components/application/table/base-table";
 import type { AttendanceStatus, GuestWithResponse } from "@/types/guest";
 import { ADMIN_DASHBOARD_FILTERED_TABLE_PAGE_SIZE } from "@/utils/constants";
+import { guessLabel, plusOneSummary } from "@/lib/guest-labels";
 
 interface FilteredGuestTableProps {
   guests: GuestWithResponse[];
   title: string;
-  showPlusGuests?: boolean;
 }
 
 type StatusFilter = "all" | AttendanceStatus;
@@ -27,7 +27,6 @@ type StatusFilter = "all" | AttendanceStatus;
 export function FilteredGuestTable({
   guests,
   title,
-  showPlusGuests = false,
 }: FilteredGuestTableProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
@@ -60,9 +59,6 @@ export function FilteredGuestTable({
     );
   };
 
-  // Interim: plus-one seats are reworked in Task 13.
-  const calculateTotalSeats = (guest: GuestWithResponse) => (guest ? 1 : 1);
-
   const columns = useMemo<ColumnDef<GuestWithResponse>[]>(() => {
     const baseColumns: ColumnDef<GuestWithResponse>[] = [
       {
@@ -84,28 +80,22 @@ export function FilteredGuestTable({
       },
     ];
 
-    if (showPlusGuests) {
-      baseColumns.push({
-        id: "total_seats",
-        header: () => <div className="text-center">Total Seats</div>,
-        cell: ({ row }) => {
-          const guest = row.original;
-          const totalSeats = calculateTotalSeats(guest);
-          const plusGuests: number = 0;
-
-          return (
-            <div className="text-center">
-              <span className="font-semibold">{totalSeats}</span>
-              {plusGuests > 0 && (
-                <span className="text-xs text-muted-foreground ml-1">
-                  (1 + {plusGuests})
-                </span>
-              )}
-            </div>
-          );
-        },
-      });
-    }
+    baseColumns.push(
+      {
+        id: "guess",
+        header: () => <div className="text-center">Guess</div>,
+        cell: ({ row }) => (
+          <div className="text-center text-sm">{guessLabel(row.original.response)}</div>
+        ),
+      },
+      {
+        id: "plus_ones",
+        header: () => <div className="text-center">Plus-ones</div>,
+        cell: ({ row }) => (
+          <div className="text-center text-sm">{plusOneSummary(row.original.response)}</div>
+        ),
+      }
+    );
 
     baseColumns.push({
       accessorKey: "attendance_status",
@@ -165,7 +155,7 @@ export function FilteredGuestTable({
     }
 
     return baseColumns;
-  }, [guests, showPlusGuests]);
+  }, [guests]);
 
   const statusToolbar = (
     <div className="flex w-full flex-col gap-1.5 sm:w-[11rem]">

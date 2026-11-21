@@ -1,114 +1,66 @@
-import type { Guest } from "@/types/guest";
+import type { GuestWithResponse } from "@/types/guest";
 
-export interface GuestStatistics {
-  /** Count of invitation rows in the database. */
-  totalMainGuests: number;
-  /** Sum of `number_of_plus_invited_guests` across all main guest rows (plus seats only). */
-  totalPlusSeats: number;
-  /** Sum of (1 + plus) seats across every row, including declined. */
-  totalGuestsInvited: number;
-  /**
-   * Sum of (1 + plus) for rows that are **pending** or **attending** only.
-   * Declined rows are excluded — “still in play” capacity for planning.
-   */
-  totalSeatsPendingAndAttending: number;
-  /** Sum of (1 + plus) for attending rows. */
-  totalAttending: number;
-  /** Sum of (1 + plus) for not_attending rows. */
-  totalNotAttending: number;
-  /** Pending seats (main + plus) for pending rows. */
-  totalPending: number;
-  mainGuestsPendingCount: number;
-  mainGuestsAttendingCount: number;
-  mainGuestsNotAttendingCount: number;
-  attendingPercentage: number;
-  notAttendingPercentage: number;
-  pendingPercentage: number;
-  /** Attending seats as % of `totalSeatsPendingAndAttending` (0 if that total is 0). */
-  attendingPercentageOfActiveInvited: number;
+/** Numbers for the admin dashboard. Plus-one and guess figures count attending guests only. */
+export interface PartyStats {
+  invited: number;
+  attending: number;
+  notAttending: number;
+  noAnswer: number;
+  /** Seats the couple approved for companions. */
+  approvedPlusOnes: number;
+  /** Guests whose plus-one request still needs a decision. */
+  pendingPlusOneRequests: number;
+  /** Companion seats asked for in those undecided requests. */
+  pendingPlusOneSeats: number;
+  /** Attending guests plus approved companions. */
+  expectedHeadcount: number;
+  /** Expected headcount if every undecided request were approved. */
+  headcountIfAllApproved: number;
+  teamPink: number;
+  teamBlue: number;
 }
 
-// Interim: one seat per row until Task 13 rewrites stats.
-function seatsForGuest(guest: Guest): number {
-  return guest ? 1 : 1;
-}
-
-/**
- * Calculate comprehensive guest statistics for the admin dashboard.
- */
-export function calculateGuestStatistics(guests: Guest[]): GuestStatistics {
-  const totalMainGuests = guests.length;
-
-  const totalPlusSeats = 0;
-
-  const mainGuestsPendingCount = guests.filter(
-    (g) => g.attendance_status === "pending"
-  ).length;
-  const mainGuestsAttendingCount = guests.filter(
-    (g) => g.attendance_status === "attending"
-  ).length;
-  const mainGuestsNotAttendingCount = guests.filter(
-    (g) => g.attendance_status === "not_attending"
-  ).length;
-
-  const totalGuestsInvited = guests.reduce(
-    (sum, guest) => sum + seatsForGuest(guest),
-    0
-  );
-
-  const totalSeatsPendingAndAttending = guests
-    .filter(
-      (g) =>
-        g.attendance_status === "pending" || g.attendance_status === "attending"
-    )
-    .reduce((sum, guest) => sum + seatsForGuest(guest), 0);
-
-  const totalAttending = guests
-    .filter((g) => g.attendance_status === "attending")
-    .reduce((sum, guest) => sum + seatsForGuest(guest), 0);
-
-  const totalNotAttending = guests
-    .filter((g) => g.attendance_status === "not_attending")
-    .reduce((sum, guest) => sum + seatsForGuest(guest), 0);
-
-  const totalPending = guests
-    .filter((g) => g.attendance_status === "pending")
-    .reduce((sum, guest) => sum + seatsForGuest(guest), 0);
-
-  const attendingPercentage =
-    totalGuestsInvited > 0
-      ? Math.round((totalAttending / totalGuestsInvited) * 100)
-      : 0;
-
-  const notAttendingPercentage =
-    totalGuestsInvited > 0
-      ? Math.round((totalNotAttending / totalGuestsInvited) * 100)
-      : 0;
-
-  const pendingPercentage =
-    totalGuestsInvited > 0
-      ? Math.round((totalPending / totalGuestsInvited) * 100)
-      : 0;
-
-  const attendingPercentageOfActiveInvited =
-    totalSeatsPendingAndAttending > 0
-      ? Math.round((totalAttending / totalSeatsPendingAndAttending) * 100)
-      : 0;
-
-  return {
-    totalMainGuests,
-    totalPlusSeats,
-    totalGuestsInvited,
-    totalSeatsPendingAndAttending,
-    totalAttending,
-    totalNotAttending,
-    totalPending,
-    mainGuestsPendingCount,
-    mainGuestsAttendingCount,
-    mainGuestsNotAttendingCount,
-    attendingPercentage,
-    notAttendingPercentage,
-    pendingPercentage,
-    attendingPercentageOfActiveInvited,
+export function calculatePartyStats(rows: GuestWithResponse[]): PartyStats {
+  const stats: PartyStats = {
+    invited: rows.length,
+    attending: 0,
+    notAttending: 0,
+    noAnswer: 0,
+    approvedPlusOnes: 0,
+    pendingPlusOneRequests: 0,
+    pendingPlusOneSeats: 0,
+    expectedHeadcount: 0,
+    headcountIfAllApproved: 0,
+    teamPink: 0,
+    teamBlue: 0,
   };
+
+  for (const row of rows) {
+    if (row.attendance_status === "not_attending") {
+      stats.notAttending++;
+      continue;
+    }
+    if (row.attendance_status !== "attending") {
+      stats.noAnswer++;
+      continue;
+    }
+
+    stats.attending++;
+    const response = row.response;
+    if (!response) continue;
+
+    if (response.guess === "girl") stats.teamPink++;
+    if (response.guess === "boy") stats.teamBlue++;
+
+    if (response.plus_one_status === "approved") {
+      stats.approvedPlusOnes += response.plus_one_approved_count ?? 0;
+    } else if (response.plus_one_status === "pending") {
+      stats.pendingPlusOneRequests++;
+      stats.pendingPlusOneSeats += response.plus_one_count;
+    }
+  }
+
+  stats.expectedHeadcount = stats.attending + stats.approvedPlusOnes;
+  stats.headcountIfAllApproved = stats.expectedHeadcount + stats.pendingPlusOneSeats;
+  return stats;
 }

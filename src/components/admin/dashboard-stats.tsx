@@ -1,289 +1,150 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import {
-  Users,
-  UserCheck,
-  UserX,
-  Clock,
-  UsersRound,
-  Ban,
-} from "lucide-react";
+import { useMemo, useState } from "react";
+import { Clock, UserCheck, UserPlus, Users, UsersRound, UserX } from "lucide-react";
 import { DashboardStatCard } from "./dashboard-stat-card";
 import { FilteredGuestTable } from "./filtered-guest-table";
-import type { GuestStatistics } from "@/utils/statistics";
 import type { GuestWithResponse } from "@/types/guest";
+import { calculatePartyStats, type PartyStats } from "@/utils/statistics";
 
-interface DashboardStatsProps {
-  stats: GuestStatistics;
-  guests: GuestWithResponse[];
-}
+type CardId = "invited" | "attending" | "not_attending" | "no_answer" | "headcount" | "plus_requests";
 
-export type DashboardStatCardId =
-  | "main_invited"
-  | "main_pending"
-  | "main_attending"
-  | "main_not_attending"
-  | "total_active_invited"
-  | "total_pending_seats"
-  | "total_attending_seats"
-  | "total_not_attending_seats"
-  | null;
+type CardDef = {
+  id: CardId;
+  title: string;
+  value: (s: PartyStats) => number;
+  subtitle?: (s: PartyStats) => string;
+  tooltip: string;
+  icon: typeof Users;
+  iconColor: string;
+  bg: string;
+  filter: (row: GuestWithResponse) => boolean;
+  tableTitle: string;
+};
 
-const HINT_MAIN_ROWS =
-  "Counts invitation rows only (one per primary guest). Plus-one slots are not added here.";
+const CARDS: CardDef[] = [
+  {
+    id: "invited",
+    title: "Invited",
+    value: (s) => s.invited,
+    tooltip: "One per invitation link (companions not included).",
+    icon: Users,
+    iconColor: "text-party-ink",
+    bg: "bg-card",
+    filter: () => true,
+    tableTitle: "All guests",
+  },
+  {
+    id: "attending",
+    title: "Attending",
+    value: (s) => s.attending,
+    tooltip: "Guests who said yes (companions not included).",
+    icon: UserCheck,
+    iconColor: "text-green-600",
+    bg: "bg-gradient-to-br from-green-50 to-white",
+    filter: (r) => r.attendance_status === "attending",
+    tableTitle: "Attending",
+  },
+  {
+    id: "not_attending",
+    title: "Not attending",
+    value: (s) => s.notAttending,
+    tooltip: "Guests who said they can't make it.",
+    icon: UserX,
+    iconColor: "text-red-600",
+    bg: "bg-gradient-to-br from-red-50 to-white",
+    filter: (r) => r.attendance_status === "not_attending",
+    tableTitle: "Not attending",
+  },
+  {
+    id: "no_answer",
+    title: "No answer yet",
+    value: (s) => s.noAnswer,
+    tooltip: "Guests who haven't answered through their link.",
+    icon: Clock,
+    iconColor: "text-amber-600",
+    bg: "bg-gradient-to-br from-amber-50 to-white",
+    filter: (r) => r.attendance_status === "pending",
+    tableTitle: "No answer yet",
+  },
+  {
+    id: "headcount",
+    title: "Expected headcount",
+    value: (s) => s.expectedHeadcount,
+    subtitle: (s) => `${s.headcountIfAllApproved} if all pending plus-ones are approved`,
+    tooltip: "Attending guests plus the companions you approved.",
+    icon: UsersRound,
+    iconColor: "text-party-ink",
+    bg: "bg-gradient-to-br from-party-pink/30 via-white to-party-blue/30",
+    filter: (r) => r.attendance_status === "attending",
+    tableTitle: "Coming (with plus-ones)",
+  },
+  {
+    id: "plus_requests",
+    title: "Plus-one requests waiting",
+    value: (s) => s.pendingPlusOneRequests,
+    subtitle: (s) => `${s.pendingPlusOneSeats} seat(s) asked for`,
+    tooltip: "Requests you haven't approved or declined yet.",
+    icon: UserPlus,
+    iconColor: "text-party-ink",
+    bg: "bg-card",
+    filter: (r) => r.attendance_status === "attending" && r.response?.plus_one_status === "pending",
+    tableTitle: "Plus-one requests waiting",
+  },
+];
 
-const HINT_TOTAL_SEATS =
-  "Each row = 1 main seat + the number of plus guests invited for that row.";
-
-const HINT_ACTIVE_TOTAL =
-  "Adds 1 + plus seats for every pending or attending row. Rows marked not attending are left out so this matches “who might still come.”";
-
-export function DashboardStats({ stats, guests }: DashboardStatsProps) {
-  const [expandedCard, setExpandedCard] = useState<DashboardStatCardId>(null);
-
-  const toggleCard = (cardType: DashboardStatCardId) => {
-    setExpandedCard(expandedCard === cardType ? null : cardType);
-  };
-
-  const getFilteredGuests = (type: DashboardStatCardId): GuestWithResponse[] => {
-    switch (type) {
-      case "main_invited":
-        return guests;
-      case "main_pending":
-        return guests.filter((g) => g.attendance_status === "pending");
-      case "main_attending":
-        return guests.filter((g) => g.attendance_status === "attending");
-      case "main_not_attending":
-        return guests.filter((g) => g.attendance_status === "not_attending");
-      case "total_active_invited":
-        return guests.filter(
-          (g) =>
-            g.attendance_status === "pending" ||
-            g.attendance_status === "attending"
-        );
-      case "total_pending_seats":
-        return guests.filter((g) => g.attendance_status === "pending");
-      case "total_attending_seats":
-        return guests.filter((g) => g.attendance_status === "attending");
-      case "total_not_attending_seats":
-        return guests.filter((g) => g.attendance_status === "not_attending");
-      default:
-        return [];
-    }
-  };
-
-  const getTableTitle = (type: DashboardStatCardId): string => {
-    switch (type) {
-      case "main_invited":
-        return "All main guests";
-      case "main_pending":
-        return "Main guests — pending";
-      case "main_attending":
-        return "Main guests — attending";
-      case "main_not_attending":
-        return "Main guests — not attending";
-      case "total_active_invited":
-        return "Pending + attending (seat total)";
-      case "total_pending_seats":
-        return "Pending — total seats";
-      case "total_attending_seats":
-        return "Attending — total seats";
-      case "total_not_attending_seats":
-        return "Not attending — total seats";
-      default:
-        return "";
-    }
-  };
-
-  const showPlusForExpanded = (type: DashboardStatCardId): boolean => {
-    if (!type) return false;
-    return type.startsWith("total_");
-  };
-
-  const renderCardWithTable = (
-    cardType: DashboardStatCardId,
-    title: string,
-    value: ReactNode,
-    subtitle: ReactNode,
-    icon: typeof Users,
-    iconColor: string,
-    bgGradient: string,
-    infoTooltip: string,
-    options?: { showPlusGuests?: boolean }
-  ) => (
-    <div className="space-y-4">
-      <DashboardStatCard
-        title={title}
-        value={value}
-        subtitle={subtitle}
-        infoTooltip={infoTooltip}
-        icon={icon}
-        iconColor={iconColor}
-        bgGradient={bgGradient}
-        onClick={() => toggleCard(cardType)}
-        isExpanded={expandedCard === cardType}
-        isClickable
-      />
-
-      {expandedCard === cardType && (
-        <div className="lg:hidden animate-in slide-in-from-top-4 duration-300">
-          <FilteredGuestTable
-            guests={getFilteredGuests(cardType)}
-            title={getTableTitle(cardType)}
-            showPlusGuests={
-              options?.showPlusGuests ?? showPlusForExpanded(cardType)
-            }
-          />
-        </div>
-      )}
-    </div>
-  );
+/** Team Pink vs Team Blue: two equal-height segments sized by share (50/50 when no guesses). */
+function TeamBar({ pink, blue }: { pink: number; blue: number }) {
+  const total = pink + blue;
+  const pinkShare = total === 0 ? 50 : Math.round((pink / total) * 100);
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-3">
-        <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-            Main guests
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1 max-w-2xl">
-            Row counts only — each number is one invitation (primary guest), not
-            including their plus seats.
-          </p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {renderCardWithTable(
-            "main_invited",
-            "Main guests invited",
-            stats.totalMainGuests,
-            "All invitation rows on your list",
-            Users,
-            "text-beige-600",
-            "bg-gradient-to-br from-beige-50 to-white",
-            HINT_MAIN_ROWS,
-            { showPlusGuests: false }
-          )}
-          {renderCardWithTable(
-            "main_pending",
-            "Main guests pending",
-            stats.mainGuestsPendingCount,
-            "Awaiting RSVP",
-            Clock,
-            "text-amber-600",
-            "bg-gradient-to-br from-amber-50 to-white",
-            HINT_MAIN_ROWS,
-            { showPlusGuests: false }
-          )}
-          {renderCardWithTable(
-            "main_attending",
-            "Main guests attending",
-            stats.mainGuestsAttendingCount,
-            "Confirmed “yes” from the primary guest",
-            UserCheck,
-            "text-green-600",
-            "bg-gradient-to-br from-green-50 to-white",
-            HINT_MAIN_ROWS,
-            { showPlusGuests: false }
-          )}
-          {renderCardWithTable(
-            "main_not_attending",
-            "Main guests not attending",
-            stats.mainGuestsNotAttendingCount,
-            "Declined from the primary guest",
-            Ban,
-            "text-red-600",
-            "bg-gradient-to-br from-red-50 to-white",
-            HINT_MAIN_ROWS,
-            { showPlusGuests: false }
-          )}
-        </div>
-      </section>
+    <div className="rounded-lg border bg-card p-5" data-team-bar>
+      <div className="mb-2 flex items-center justify-between text-sm font-semibold">
+        <span className="text-party-pink-deep">Team Pink (girl) · {pink}</span>
+        <span className="text-party-blue-deep">{blue} · Team Blue (boy)</span>
+      </div>
+      <div className="flex h-4 overflow-hidden rounded-full" role="img" aria-label={`${pink} guessed girl, ${blue} guessed boy`}>
+        <div className="bg-party-pink" style={{ width: `${pinkShare}%` }} />
+        <div className="bg-party-blue" style={{ width: `${100 - pinkShare}%` }} />
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">Guesses from attending guests.</p>
+    </div>
+  );
+}
 
-      <section className="rounded-2xl border-2 border-primary/25 bg-primary/5 p-4 sm:p-6 space-y-3 shadow-sm">
-        <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">
-            Total seats
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1 max-w-2xl">
-            Headcount math: <strong className="text-foreground">1 + plus</strong>{" "}
-            per row. <strong className="text-foreground">Active invited</strong>{" "}
-            sums pending + attending seats only (declined excluded).{" "}
-            <strong className="text-foreground">Total pending guests</strong> is
-            main + plus seats for rows still awaiting RSVP.
-          </p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {renderCardWithTable(
-            "total_active_invited",
-            "Total guests invited (active)",
-            stats.totalSeatsPendingAndAttending,
-            <>
-              <p>
-                Pending + attending seats only. Not attending rows are{" "}
-                <span className="font-medium text-foreground">not</span>{" "}
-                included.
-              </p>
-            </>,
-            UsersRound,
-            "text-blue-600",
-            "bg-gradient-to-br from-blue-50/90 to-white",
-            HINT_ACTIVE_TOTAL,
-            { showPlusGuests: true }
-          )}
-          {renderCardWithTable(
-            "total_pending_seats",
-            "Total pending guests",
-            stats.totalPending,
-            <p>{stats.pendingPercentage}% of all list seats</p>,
-            Clock,
-            "text-amber-700",
-            "bg-gradient-to-br from-amber-50/90 to-white",
-            `${HINT_TOTAL_SEATS} Only rows with status pending.`,
-            { showPlusGuests: true }
-          )}
-          {renderCardWithTable(
-            "total_attending_seats",
-            "Total attending guests",
-            stats.totalAttending,
-            <>
-              <p>
-                {stats.totalSeatsPendingAndAttending > 0
-                  ? `${stats.attendingPercentageOfActiveInvited}% of active invited seats`
-                  : "—"}
-                {" · "}
-                {stats.attendingPercentage}% of all list seats
-              </p>
-            </>,
-            UserCheck,
-            "text-emerald-700",
-            "bg-gradient-to-br from-emerald-50/90 to-white",
-            `${HINT_TOTAL_SEATS} Only rows with status attending.`,
-            { showPlusGuests: true }
-          )}
-          {renderCardWithTable(
-            "total_not_attending_seats",
-            "Total not attending guests",
-            stats.totalNotAttending,
-            <p>{stats.notAttendingPercentage}% of all list seats</p>,
-            UserX,
-            "text-red-700",
-            "bg-gradient-to-br from-rose-50/90 to-white",
-            `${HINT_TOTAL_SEATS} Only rows with status not attending.`,
-            { showPlusGuests: true }
-          )}
-        </div>
-      </section>
+export function DashboardStats({ rows }: { rows: GuestWithResponse[] }) {
+  const stats = useMemo(() => calculatePartyStats(rows), [rows]);
+  const [expanded, setExpanded] = useState<CardId | null>(null);
+  const expandedCard = CARDS.find((card) => card.id === expanded);
+
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {CARDS.map((card) => (
+          <DashboardStatCard
+            key={card.id}
+            title={card.title}
+            value={card.value(stats)}
+            subtitle={card.subtitle?.(stats)}
+            infoTooltip={card.tooltip}
+            icon={card.icon}
+            iconColor={card.iconColor}
+            bgGradient={card.bg}
+            onClick={() => setExpanded(expanded === card.id ? null : card.id)}
+            isExpanded={expanded === card.id}
+            isClickable
+          />
+        ))}
+      </div>
 
       {expandedCard && (
-        <div className="hidden lg:block animate-in slide-in-from-top-4 duration-300">
-          <FilteredGuestTable
-            guests={getFilteredGuests(expandedCard)}
-            title={getTableTitle(expandedCard)}
-            showPlusGuests={showPlusForExpanded(expandedCard)}
-          />
+        <div className="animate-in slide-in-from-top-4 duration-300">
+          <FilteredGuestTable guests={rows.filter(expandedCard.filter)} title={expandedCard.tableTitle} />
         </div>
       )}
+
+      <TeamBar pink={stats.teamPink} blue={stats.teamBlue} />
     </div>
   );
 }
