@@ -20,7 +20,10 @@ export default function OpengraphImage() {
         <div
           style={{
             position: "absolute",
-            inset: 60,
+            top: 56,
+            left: 56,
+            right: 56,
+            bottom: 56,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -32,7 +35,7 @@ export default function OpengraphImage() {
           }}
         >
           <div style={{ fontSize: 30, letterSpacing: 6, color: INK_SOFT }}>YOU&apos;RE INVITED</div>
-          <div style={{ fontSize: 78, fontWeight: 700, marginTop: 14 }}>{EVENT_TITLE}</div>
+          <div style={{ fontSize: 68, fontWeight: 700, marginTop: 14 }}>{EVENT_TITLE}</div>
           <div style={{ fontSize: 44, marginTop: 8, color: INK_SOFT }}>{EVENT_HOSTS_LINE}</div>
           <div style={{ fontSize: 34, marginTop: 34, fontWeight: 600 }}>{EVENT_DATE_DISPLAY}</div>
           <div style={{ fontSize: 30, marginTop: 10, color: INK_SOFT }}>{VENUE_NAME}</div>
