@@ -1,5 +1,13 @@
 # Changelog
 
+## [2026-11-21] Review fixes
+
+- **Edit answer keeps your decisions:** saving an answer without changing attendance or the plus-one count keeps a pending request, a partial approval or a decline. Before, any save (even a message fix) approved the full count.
+- **Readable colors (WCAG AA):** new text shades `party-pink-ink` (#9E3A66) and `party-blue-ink` (#2B649A); `party-ink-soft` darkened to #5C6680; form errors use a neutral red instead of pink.
+- **Blocked browser storage no longer breaks the invitation:** the "envelope opened" flag falls back to memory when sessionStorage is blocked or full.
+- **Database admin check:** RLS now requires `app_metadata.role = 'admin'` (set by `npm run admin:create`), so an account someone makes for themselves sees nothing even if sign-ups are left on. The app's login and admin pages check the same mark plus `ADMIN_EMAILS`.
+- README: a real-phone check before sending, and the updated admin setup.
+
 ## [2026-11-21] Initial build
 
 Built from the `rsvp-wedding` codebase for Philip & Vera's Gender Reveal & Baby Shower (Saturday, December 5, 2026, 5:00 PM, Aquatico Royalle Private Resort). Design: `docs/superpowers/specs/2026-11-21-gender-reveal-rsvp-design.md`.
@@ -20,5 +28,5 @@ Built from the `rsvp-wedding` codebase for Philip & Vera's Gender Reveal & Baby 
 
 ### Data & security
 - Tables `guests`, `responses`, `settings` with SQL migrations in `supabase/migrations/`; a trigger keeps guest status in sync with responses.
-- RLS: authenticated admins only; the anon key has no table access at all. Guest pages use a server-only service-role client scoped to the guest's UUID.
+- RLS: admins only (`app_metadata.role = 'admin'`); the anon key has no table access at all. Guest pages use a server-only service-role client scoped to the guest's UUID.
 - Tests: Vitest unit tests for the business rules and actions; pgTAP database tests (`npm run test:db`).

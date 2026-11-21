@@ -41,7 +41,7 @@ ADMIN_EMAILS=you@example.com
 | `npm test` | Unit tests (Vitest) |
 | `npm run test:db` | Database tests (pgTAP via `supabase test db`; needs local Supabase running) |
 | `npm run types:generate` | Regenerate `src/types/database.ts` from the local database |
-| `npm run admin:create -- <email> <password>` | Create an admin user in the local database |
+| `npm run admin:create -- <email> <password>` | Create an admin user (or mark an existing one as admin). Only users created this way can see guest data. |
 
 ## Private project
 
@@ -55,9 +55,10 @@ All rights reserved.
 
 ## Before sending invitations
 
+0. **Real phone check:** add a test guest, send its link to yourself and open it on a real phone *inside Messenger* (and once in a regular browser): tap the envelope, scroll every section, open the map and send a test RSVP. Then delete the test guest from the dashboard. The app was only tested with an emulated phone.
 1. **Baby photos:** save them as `public/party/mini-vera.jpg` and `public/party/mini-philip.jpg` (portrait works best). Until then the frames show a cartoon placeholder.
 2. **Deploy:** create a cloud Supabase project (the free plan allows 2 active projects — pause the wedding one if needed), apply `supabase/migrations/`, disable sign-ups, and create the admin users. Deploy to Vercel with the env vars from `.env.example`.
 3. **Real address:** set `NEXT_PUBLIC_APP_URL` to the final domain *before* copying any guest links — copied links keep whatever address was set when copied. Links copied on localhost won't work for guests.
-4. **Admins:** set `ADMIN_EMAILS` to Philip's and Vera's emails.
+4. **Admins:** create each admin with `npm run admin:create` (pointed at the cloud project's URL and service-role key) and list their emails in `ADMIN_EMAILS`. Both are needed: the database only shares guest data with users the script marked as admin, so an account made by hand in the Supabase dashboard — or by someone signing up — sees nothing.
 5. **Email notifications (optional):** set the EmailJS variables. Template fields: `guest_name`, `respondent_name`, `attendance_status`, `guess`, `plus_one_request`, `message`, `submitted_at`, `dashboard_url`, `to_email`.
 6. **Music (optional):** not included; add a song and a player if wanted.
