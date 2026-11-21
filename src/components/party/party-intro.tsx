@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { PartyEnvelope } from "./party-envelope";
+import { readSessionFlag, writeSessionFlag } from "@/lib/session-flag";
 import { STORAGE_PARTY_ENVELOPE_OPENED } from "@/utils/constants";
 
 function subscribe(callback: () => void) {
@@ -23,7 +24,7 @@ function subscribe(callback: () => void) {
 export function PartyIntro({ children }: { children: ReactNode }) {
   const isRevealed = useSyncExternalStore(
     subscribe,
-    () => sessionStorage.getItem(STORAGE_PARTY_ENVELOPE_OPENED) === "true",
+    () => readSessionFlag(STORAGE_PARTY_ENVELOPE_OPENED),
     () => false
   );
   const [idleMount, setIdleMount] = useState(false);
@@ -57,7 +58,7 @@ export function PartyIntro({ children }: { children: ReactNode }) {
   }, [isRevealed]);
 
   const handleOpen = useCallback(() => {
-    sessionStorage.setItem(STORAGE_PARTY_ENVELOPE_OPENED, "true");
+    writeSessionFlag(STORAGE_PARTY_ENVELOPE_OPENED);
     window.dispatchEvent(new Event("storage"));
   }, []);
 
