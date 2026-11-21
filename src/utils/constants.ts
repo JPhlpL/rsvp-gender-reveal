@@ -305,3 +305,7 @@ export const EXPORT_GUESTS_DEFAULT_BASENAME = "wedding-guests";
 
 // --- Fallback when env is missing (dev) ---
 export const DEFAULT_PUBLIC_APP_URL = "http://localhost:3005";
+
+// --- RSVP ---
+/** Most companions a guest may ask to bring (matches the DB check). */
+export const PLUS_ONE_MAX = 5;
