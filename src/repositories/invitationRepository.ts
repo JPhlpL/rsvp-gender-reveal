@@ -1,0 +1,78 @@
+import "server-only";
+
+import { createServiceClient } from "@/utils/supabase/service";
+import type { Guest } from "@/types/guest";
+import type { GuestResponse, GuestResponseInsert } from "@/types/response";
+import type { RsvpSettings } from "@/types/settings";
+
+export type InvitationGuest = Pick<Guest, "id" | "uuid" | "name" | "notes">;
+
+export type Invitation = {
+  guest: InvitationGuest;
+  response: GuestResponse | null;
+};
+
+/**
+ * Guest-facing data access (service role). Every query is scoped to the one
+ * UUID from the guest's link; nothing here lists or returns other guests.
+ */
+export async function getInvitationByUuid(uuid: string): Promise<Invitation | null> {
+  const supabase = createServiceClient();
+
+  const { data: guest, error } = await supabase
+    .from("guests")
+    .select("id, uuid, name, notes")
+    .eq("uuid", uuid)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error loading invitation:", error);
+    throw new Error("Failed to load invitation");
+  }
+  if (!guest) return null;
+
+  const { data: response, error: responseError } = await supabase
+    .from("responses")
+    .select("*")
+    .eq("guest_id", guest.id)
+    .maybeSingle();
+
+  if (responseError) {
+    console.error("Error loading invitation response:", responseError);
+    throw new Error("Failed to load invitation");
+  }
+
+  return { guest, response };
+}
+
+export async function getRsvpSettings(): Promise<RsvpSettings> {
+  const supabase = createServiceClient();
+
+  const { data, error } = await supabase
+    .from("settings")
+    .select("rsvp_deadline, rsvp_closed")
+    .eq("id", 1)
+    .single();
+
+  if (error) {
+    console.error("Error loading settings:", error);
+    throw new Error("Failed to load settings");
+  }
+
+  return data;
+}
+
+/** Inserts a guest's answer. A second answer for the same guest is refused, never overwritten. */
+export async function insertGuestResponse(
+  row: GuestResponseInsert
+): Promise<"inserted" | "duplicate"> {
+  const supabase = createServiceClient();
+
+  const { error } = await supabase.from("responses").insert(row);
+
+  if (!error) return "inserted";
+  if (error.code === "23505") return "duplicate";
+
+  console.error("Error saving response:", error);
+  throw new Error("Failed to save response");
+}
