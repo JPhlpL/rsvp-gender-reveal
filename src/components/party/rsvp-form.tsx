@@ -26,7 +26,7 @@ const choiceClass =
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
-  return <p className="mt-1 text-sm font-semibold text-party-pink-deep">{message}</p>;
+  return <p className="mt-1 text-sm font-semibold text-red-700">{message}</p>;
 }
 
 export function RsvpForm({ uuid, slug, guestName }: RsvpFormProps) {

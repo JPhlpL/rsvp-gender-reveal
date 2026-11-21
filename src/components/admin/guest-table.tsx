@@ -115,9 +115,9 @@ export function GuestTable({ guests }: GuestTableProps) {
           const label = guessLabel(row.original.response);
           const tone =
             label === "Girl"
-              ? "bg-party-pink/50 text-party-pink-deep"
+              ? "bg-party-pink/50 text-party-pink-ink"
               : label === "Boy"
-                ? "bg-party-blue/50 text-party-blue-deep"
+                ? "bg-party-blue/50 text-party-blue-ink"
                 : "text-muted-foreground";
           return (
             <div className="flex justify-center">

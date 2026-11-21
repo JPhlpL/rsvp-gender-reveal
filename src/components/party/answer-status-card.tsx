@@ -5,14 +5,14 @@ import { COPY_CHANGE_SOMETHING, EVENT_DATE_SHORT } from "@/utils/constants";
 function GuessLine({ guess }: { guess: GuestResponse["guess"] }) {
   if (guess === "girl") {
     return (
-      <p className="mt-3 inline-block rounded-full bg-party-pink/60 px-4 py-1.5 font-semibold text-party-pink-deep">
+      <p className="mt-3 inline-block rounded-full bg-party-pink/60 px-4 py-1.5 font-semibold text-party-pink-ink">
         Your guess: Girl. Wear pink!
       </p>
     );
   }
   if (guess === "boy") {
     return (
-      <p className="mt-3 inline-block rounded-full bg-party-blue/60 px-4 py-1.5 font-semibold text-party-blue-deep">
+      <p className="mt-3 inline-block rounded-full bg-party-blue/60 px-4 py-1.5 font-semibold text-party-blue-ink">
         Your guess: Boy. Wear blue!
       </p>
     );

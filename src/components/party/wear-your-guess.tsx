@@ -13,11 +13,11 @@ export function WearYourGuess() {
       <div className="mx-auto mt-6 grid max-w-xs grid-cols-2 gap-4">
         <div className="flex flex-col items-center gap-2 rounded-2xl bg-party-pink/50 px-3 py-4">
           <Onesie className="h-14 w-14 text-party-pink" />
-          <span className="font-display text-lg font-semibold text-party-pink-deep">Girl</span>
+          <span className="font-display text-lg font-semibold text-party-pink-ink">Girl</span>
         </div>
         <div className="flex flex-col items-center gap-2 rounded-2xl bg-party-blue/50 px-3 py-4">
           <Onesie className="h-14 w-14 text-party-blue" />
-          <span className="font-display text-lg font-semibold text-party-blue-deep">Boy</span>
+          <span className="font-display text-lg font-semibold text-party-blue-ink">Boy</span>
         </div>
       </div>
     </section>

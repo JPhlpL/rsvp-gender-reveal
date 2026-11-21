@@ -10,8 +10,8 @@ type FrameProps = {
 };
 
 const TONE = {
-  pink: { frame: "border-party-pink bg-party-pink/30", text: "text-party-pink-deep", tilt: "-rotate-3" },
-  blue: { frame: "border-party-blue bg-party-blue/30", text: "text-party-blue-deep", tilt: "rotate-3" },
+  pink: { frame: "border-party-pink bg-party-pink/30", text: "text-party-pink-ink", tilt: "-rotate-3" },
+  blue: { frame: "border-party-blue bg-party-blue/30", text: "text-party-blue-ink", tilt: "rotate-3" },
 } as const;
 
 function PhotoFrame({ label, photoPath, tone }: FrameProps) {

@@ -13,12 +13,14 @@
   --font-display: var(--font-fredoka);
   --color-party-pink: #F7C6D9;
   --color-party-pink-deep: #D9719B;
+  --color-party-pink-ink: #9E3A66;
   --color-party-blue: #BFDDF5;
   --color-party-blue-deep: #4F8FC9;
+  --color-party-blue-ink: #2B649A;
   --color-party-cream: #FFF9F3;
   --color-party-white: #FFFFFF;
   --color-party-ink: #3A4560;
-  --color-party-ink-soft: #6B7590;
+  --color-party-ink-soft: #5C6680;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

@@ -101,8 +101,8 @@ function TeamBar({ pink, blue }: { pink: number; blue: number }) {
   return (
     <div className="rounded-lg border bg-card p-5" data-team-bar>
       <div className="mb-2 flex items-center justify-between text-sm font-semibold">
-        <span className="text-party-pink-deep">Team Pink (girl) · {pink}</span>
-        <span className="text-party-blue-deep">{blue} · Team Blue (boy)</span>
+        <span className="text-party-pink-ink">Team Pink (girl) · {pink}</span>
+        <span className="text-party-blue-ink">{blue} · Team Blue (boy)</span>
       </div>
       <div className="flex h-4 overflow-hidden rounded-full" role="img" aria-label={`${pink} guessed girl, ${blue} guessed boy`}>
         <div className="bg-party-pink" style={{ width: `${pinkShare}%` }} />
