@@ -163,7 +163,7 @@ A wrong or outdated name in the slug redirects to the canonical slug, as in the 
    - Above the form: "Please answer carefully so we can prepare everything for you." No date: the couple asked on 2026-11-23 not to show one. The deadline still closes the form; the closed view (§7.6) names no date either.
    - The admin note callout, if the guest has notes.
    - Then the form, the status view (§7.5) or the closed view (§7.6).
-9. **Closing.** "We can't wait to see you, celebrate, and guess with you!", then the footer.
+9. **Closing.** "We can't wait to see, celebrate, and guess with you!" (the couple's wording, restored on 2026-11-23), then the footer.
 
 The event details (when, where, map) are visible in every state: open, answered and closed.
 

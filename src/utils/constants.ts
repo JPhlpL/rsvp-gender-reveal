@@ -36,7 +36,8 @@ export const COPY_WEAR_YOUR_GUESS_BODY =
   "Wear pink if you think it's a girl, or blue if you think it's a boy.";
 export const COPY_MINI_QUESTION = "Mini Vera or Mini Philip?";
 export const COPY_PRIZES = "A lot of gift and cash prizes are waiting for you!";
-export const COPY_CLOSING = "We can't wait to see you, celebrate, and guess with you!";
+/** The couple's own wording (2026-11-23), kept as written. */
+export const COPY_CLOSING = "We can't wait to see, celebrate, and guess with you!";
 export const COPY_CHANGE_SOMETHING = "Need to change something? Message Philip & Vera.";
 /** Under the RSVP heading, above the form. No date: the deadline is handled by closing the form. */
 export const COPY_RSVP_INTRO = "Please answer carefully so we can prepare everything for you.";

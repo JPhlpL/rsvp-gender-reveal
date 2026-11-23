@@ -5,6 +5,7 @@ import { makeResponse } from "@/test/factories";
 import { AnswerStatusCard } from "./answer-status-card";
 import { BabyPatternBackground } from "./baby-pattern-background";
 import { GiftGuide } from "./gift-guide";
+import { PartyClosing } from "./party-closing";
 import { RsvpShowcaseNote } from "./rsvp-showcase-note";
 
 describe("AnswerStatusCard", () => {
@@ -63,5 +64,12 @@ describe("BabyPatternBackground", () => {
     // Left margin measured from the page edge, right margin mirrored from the other edge.
     expect(html).toMatch(/--x:calc\(\(50% - 18rem\) \* 0\.\d+\)/);
     expect(html).toMatch(/--x:calc\(100% - \(50% - 18rem\) \* 0\.\d+\)/);
+  });
+});
+
+describe("PartyClosing", () => {
+  it("closes with the couple's line, word for word", () => {
+    const html = renderToStaticMarkup(<PartyClosing />);
+    expect(html).toContain("We can&#x27;t wait to see, celebrate, and guess with you!");
   });
 });
