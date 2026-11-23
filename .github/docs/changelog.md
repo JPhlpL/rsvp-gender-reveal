@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026-11-23] RSVP heading and Gift Guide order
+
+- Under the RSVP heading, "Please RSVP by Tuesday, December 1" is replaced by "Please answer carefully so we can prepare everything for you." No date is shown; the deadline still closes the form on time.
+- The Gift Guide now comes before the RSVP section, on guest links and `/invitation`.
+
 ## [2026-11-23] Personalized links switch
 
 - **More baby items:** the background now has 120 items (was 48) from 13 kinds, adding hearts, footprints, socks, teddy bears, sleepy moons and cribs. Each margin has two zig-zag lanes and the kinds are picked at random. Wide-screen items are placed against the invitation column, so they stay in the margins at any width. The items now fade in with the invitation; before, they showed bunched up at the screen edges for a moment while the envelope faded.

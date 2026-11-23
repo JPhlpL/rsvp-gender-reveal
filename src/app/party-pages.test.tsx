@@ -15,9 +15,13 @@ vi.mock("next/navigation", () => ({
 }));
 
 import { BabyPatternBackground } from "@/components/party/baby-pattern-background";
+import { GiftGuide } from "@/components/party/gift-guide";
 import { PartyIntro } from "@/components/party/party-intro";
+import { RsvpSection } from "@/components/party/rsvp-section";
+import { ShowcaseRsvpSection } from "@/components/party/showcase-rsvp-section";
 import { rsvpPathSegment } from "@/lib/rsvp-path";
 import { getInvitationByUuid, getRsvpSettings } from "@/repositories/invitationRepository";
+import { COPY_RSVP_INTRO } from "@/utils/constants";
 import PublicInvitationPage from "./invitation/page";
 import GuestInvitationPage from "./rsvp/[guestSlug]/page";
 
@@ -71,5 +75,50 @@ describe.each(pages)("%s", (_name, render) => {
     expect(content.some((child) => isValidElement(child) && child.type === BabyPatternBackground)).toBe(
       true
     );
+  });
+
+  it("shows the Gift Guide before the RSVP section", async () => {
+    const types = revealedContent(await render()).map((child) =>
+      isValidElement(child) ? child.type : null
+    );
+    const giftGuide = types.indexOf(GiftGuide);
+    const rsvp = types.findIndex((type) => type === RsvpSection || type === ShowcaseRsvpSection);
+    expect(giftGuide).toBeGreaterThan(-1);
+    expect(rsvp).toBeGreaterThan(-1);
+    expect(giftGuide).toBeLessThan(rsvp);
+  });
+});
+
+describe("the RSVP heading", () => {
+  const deadline = "2026-12-01T15:59:59Z";
+
+  const sections: [string, () => ReactElement][] = [
+    [
+      "on a guest's invitation",
+      () => (
+        <RsvpSection
+          guest={guest}
+          settings={{ rsvp_deadline: deadline, rsvp_closed: false }}
+          view={{ kind: "form" }}
+          slug={rsvpPathSegment(guest.name, guest.uuid)}
+        />
+      ),
+    ],
+    [
+      "on the general RSVP form",
+      () => (
+        <ShowcaseRsvpSection
+          view={{ kind: "form" }}
+          settings={{ rsvp_deadline: deadline, rsvp_closed: false, personalized_links: false }}
+        />
+      ),
+    ],
+  ];
+
+  it.each(sections)("asks guests to answer carefully, without naming a date, %s", (_name, section) => {
+    const html = renderToStaticMarkup(section());
+    expect(html).toContain(COPY_RSVP_INTRO);
+    expect(html).not.toContain("Please RSVP by");
+    expect(html).not.toContain("December");
   });
 });

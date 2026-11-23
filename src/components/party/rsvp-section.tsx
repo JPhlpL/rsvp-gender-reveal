@@ -1,10 +1,10 @@
 import type { InvitationView } from "@/lib/invitation-view";
-import { formatDeadlineDateManila } from "@/lib/rsvp-window";
 import type { InvitationGuest } from "@/repositories/invitationRepository";
 import type { RsvpSettings } from "@/types/settings";
 import { AnswerStatusCard } from "./answer-status-card";
 import { GuestNotesCallout } from "./guest-notes-callout";
 import { RsvpClosedCard } from "./rsvp-closed-card";
+import { COPY_RSVP_INTRO } from "@/utils/constants";
 import { RsvpForm } from "./rsvp-form";
 
 interface RsvpSectionProps {
@@ -21,9 +21,9 @@ export function RsvpSection({ guest, settings, view, slug }: RsvpSectionProps) {
         <h2 id="rsvp-title" className="text-center font-display text-4xl font-semibold text-party-ink">
           RSVP
         </h2>
-        {view.kind === "form" && settings.rsvp_deadline && (
+        {view.kind === "form" && (
           <p className="mt-2 mb-6 text-center text-base font-semibold text-party-ink-soft">
-            Please RSVP by {formatDeadlineDateManila(settings.rsvp_deadline)}
+            {COPY_RSVP_INTRO}
           </p>
         )}
         <div className="mt-6">

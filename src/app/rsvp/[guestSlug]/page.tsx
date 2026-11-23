@@ -59,9 +59,9 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
         <PartyVenue />
         <PrizesTeaser />
         <PartyDivider />
-        <RsvpSection guest={guest} settings={settings} view={view} slug={canonicalSlug} />
-        <PartyDivider />
         <GiftGuide />
+        <PartyDivider />
+        <RsvpSection guest={guest} settings={settings} view={view} slug={canonicalSlug} />
         <PartyDivider />
         <PartyClosing />
         <PartyFooter />

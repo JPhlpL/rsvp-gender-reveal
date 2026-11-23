@@ -38,9 +38,9 @@ export default async function PublicInvitationPage() {
         <PartyVenue />
         <PrizesTeaser />
         <PartyDivider />
-        <ShowcaseRsvpSection view={view} settings={settings} />
-        <PartyDivider />
         <GiftGuide />
+        <PartyDivider />
+        <ShowcaseRsvpSection view={view} settings={settings} />
         <PartyDivider />
         <PartyClosing />
         <PartyFooter />

@@ -1,8 +1,8 @@
 import type { ShowcaseView } from "@/lib/invitation-view";
-import { formatDeadlineDateManila } from "@/lib/rsvp-window";
 import type { PublicSettings } from "@/types/settings";
 import { RsvpClosedCard } from "./rsvp-closed-card";
 import { RsvpForm } from "./rsvp-form";
+import { COPY_RSVP_INTRO } from "@/utils/constants";
 import { RsvpShowcaseNote } from "./rsvp-showcase-note";
 
 interface ShowcaseRsvpSectionProps {
@@ -20,9 +20,9 @@ export function ShowcaseRsvpSection({ view, settings }: ShowcaseRsvpSectionProps
         <h2 id="rsvp-title" className="text-center font-display text-4xl font-semibold text-party-ink">
           RSVP
         </h2>
-        {view.kind === "form" && settings.rsvp_deadline && (
+        {view.kind === "form" && (
           <p className="mt-2 mb-6 text-center text-base font-semibold text-party-ink-soft">
-            Please RSVP by {formatDeadlineDateManila(settings.rsvp_deadline)}
+            {COPY_RSVP_INTRO}
           </p>
         )}
         <div className="mt-6">
