@@ -1,11 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import {
-  plusOneDecision,
-  toAdminResponseFields,
-  type PlusOneDecisionInput,
-} from "@/lib/answer-rules";
+import { toAdminResponseFields } from "@/lib/answer-rules";
 import { parseRsvpFormData, rsvpAnswerSchema } from "@/schemas/rsvp";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { responseRepository } from "@/repositories/responseRepository";
@@ -75,35 +71,5 @@ export async function resetAnswerAction(guestId: string): Promise<ResponseAction
   } catch (error) {
     console.error("Error resetting answer:", error);
     return { error: "Couldn't reset the answer. Please try again." };
-  }
-}
-
-/** Approve (possibly fewer) or decline a guest's plus-one request. */
-export async function decidePlusOneAction(
-  guestId: string,
-  decision: PlusOneDecisionInput
-): Promise<ResponseActionState> {
-  await requireAdmin();
-
-  try {
-    const response = await responseRepository.getResponseByGuestId(guestId);
-    if (!response || response.plus_one_count === 0) {
-      return { error: "This guest has no plus-one request." };
-    }
-
-    let fields;
-    try {
-      fields = plusOneDecision(response.plus_one_count, decision);
-    } catch (error) {
-      if (error instanceof RangeError) return { error: error.message };
-      throw error;
-    }
-
-    await responseRepository.updatePlusOneDecision(guestId, fields);
-    revalidateDashboard();
-    return { success: true };
-  } catch (error) {
-    console.error("Error deciding plus-one request:", error);
-    return { error: "Couldn't save that decision. Please try again." };
   }
 }

@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Clock, UserCheck, UserPlus, Users, UsersRound, UserX } from "lucide-react";
+import { Clock, UserCheck, Users, UsersRound, UserX } from "lucide-react";
 import { DashboardStatCard } from "./dashboard-stat-card";
 import { FilteredGuestTable } from "./filtered-guest-table";
 import type { GuestWithResponse } from "@/types/guest";
 import { calculatePartyStats, type PartyStats } from "@/utils/statistics";
 
-type CardId = "invited" | "attending" | "not_attending" | "no_answer" | "headcount" | "plus_requests";
+type CardId = "invited" | "attending" | "not_attending" | "no_answer" | "headcount";
 
 type CardDef = {
   id: CardId;
@@ -71,25 +71,16 @@ const CARDS: CardDef[] = [
     id: "headcount",
     title: "Expected headcount",
     value: (s) => s.expectedHeadcount,
-    subtitle: (s) => `${s.headcountIfAllApproved} if all pending plus-ones are approved`,
+    subtitle: (s) =>
+      `${s.attending} ${s.attending === 1 ? "guest" : "guests"} + ${s.approvedPlusOnes} ${
+        s.approvedPlusOnes === 1 ? "plus-one" : "plus-ones"
+      }`,
     tooltip: "Attending guests plus the companions you approved.",
     icon: UsersRound,
     iconColor: "text-party-ink",
     bg: "bg-gradient-to-br from-party-pink/30 via-white to-party-blue/30",
     filter: (r) => r.attendance_status === "attending",
     tableTitle: "Coming (with plus-ones)",
-  },
-  {
-    id: "plus_requests",
-    title: "Plus-one requests waiting",
-    value: (s) => s.pendingPlusOneRequests,
-    subtitle: (s) => `${s.pendingPlusOneSeats} seat(s) asked for`,
-    tooltip: "Requests you haven't approved or declined yet.",
-    icon: UserPlus,
-    iconColor: "text-party-ink",
-    bg: "bg-card",
-    filter: (r) => r.attendance_status === "attending" && r.response?.plus_one_status === "pending",
-    tableTitle: "Plus-one requests waiting",
   },
 ];
 

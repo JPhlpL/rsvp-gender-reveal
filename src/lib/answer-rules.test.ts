@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { plusOneDecision, toAdminResponseFields, toGuestResponseInsert } from "./answer-rules";
+import { toAdminResponseFields, toGuestResponseInsert } from "./answer-rules";
 import type { RsvpAnswer } from "@/schemas/rsvp";
 
 const attending = (count: number, names: string | null = null): RsvpAnswer => ({
@@ -125,29 +125,5 @@ describe("toAdminResponseFields", () => {
         plus_one_approved_count: 1,
       });
     });
-  });
-});
-
-describe("plusOneDecision", () => {
-  it("approves up to the requested count", () => {
-    expect(plusOneDecision(3, { approve: true, count: 2 })).toEqual({
-      plus_one_status: "approved",
-      plus_one_approved_count: 2,
-    });
-  });
-
-  it("declines with zero allowed", () => {
-    expect(plusOneDecision(3, { approve: false })).toEqual({
-      plus_one_status: "declined",
-      plus_one_approved_count: 0,
-    });
-  });
-
-  it("refuses more than requested", () => {
-    expect(() => plusOneDecision(3, { approve: true, count: 4 })).toThrow(RangeError);
-  });
-
-  it("refuses approving zero", () => {
-    expect(() => plusOneDecision(3, { approve: true, count: 0 })).toThrow(RangeError);
   });
 });

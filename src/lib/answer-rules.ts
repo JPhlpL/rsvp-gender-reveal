@@ -2,7 +2,6 @@ import type { RsvpAnswer } from "@/schemas/rsvp";
 import type {
   GuestResponse,
   GuestResponseInsert,
-  GuestResponseUpdate,
 } from "@/types/response";
 
 type ResponseFields = Omit<GuestResponseInsert, "guest_id">;
@@ -78,25 +77,4 @@ export function toAdminResponseFields(
     fields.plus_one_approved_count = count;
   }
   return fields;
-}
-
-export type PlusOneDecisionInput =
-  | { approve: true; count: number }
-  | { approve: false };
-
-/** The couple's decision on a pending plus-one request. */
-export function plusOneDecision(
-  requested: number,
-  decision: PlusOneDecisionInput
-): Pick<GuestResponseUpdate, "plus_one_status" | "plus_one_approved_count"> {
-  if (!decision.approve) {
-    return { plus_one_status: "declined", plus_one_approved_count: 0 };
-  }
-
-  const { count } = decision;
-  if (!Number.isInteger(count) || count < 1 || count > requested) {
-    throw new RangeError(`Pick between 1 and ${requested}`);
-  }
-
-  return { plus_one_status: "approved", plus_one_approved_count: count };
 }

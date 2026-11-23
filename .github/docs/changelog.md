@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026-11-23] Plus-one requests removed from the dashboard
+
+- Removed the **Plus-one requests** card and the **Plus-one requests waiting** stat. Guests can't ask for plus-ones any more and plus-ones the couple set are approved straight away, so both would always be empty.
+- The **Expected headcount** subtitle now shows the breakdown ("12 guests + 3 plus-ones") instead of "if all pending plus-ones are approved".
+- Removed the unused approve/decline code behind the card (`decidePlusOneAction`, `plusOneDecision`, `updatePlusOneDecision`). The database is unchanged.
+
 ## [2026-11-23] Background music
 
 - **Music player** on the invitation pages (guest links and `/invitation`): the party song (`public/party/bg_music.mp3`) starts when the guest taps the envelope and loops. A small bar at the bottom lets guests pause, play, mute and change the volume. iPhones only get mute, because they ignore volume set by a page (their side buttons still work). No album cover, title, skip or seek. Not shown on the thank-you page or the dashboard.

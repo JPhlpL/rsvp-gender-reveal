@@ -8,14 +8,8 @@ export interface PartyStats {
   noAnswer: number;
   /** Seats the couple approved for companions. */
   approvedPlusOnes: number;
-  /** Guests whose plus-one request still needs a decision. */
-  pendingPlusOneRequests: number;
-  /** Companion seats asked for in those undecided requests. */
-  pendingPlusOneSeats: number;
   /** Attending guests plus approved companions. */
   expectedHeadcount: number;
-  /** Expected headcount if every undecided request were approved. */
-  headcountIfAllApproved: number;
   teamPink: number;
   teamBlue: number;
 }
@@ -27,10 +21,7 @@ export function calculatePartyStats(rows: GuestWithResponse[]): PartyStats {
     notAttending: 0,
     noAnswer: 0,
     approvedPlusOnes: 0,
-    pendingPlusOneRequests: 0,
-    pendingPlusOneSeats: 0,
     expectedHeadcount: 0,
-    headcountIfAllApproved: 0,
     teamPink: 0,
     teamBlue: 0,
   };
@@ -54,13 +45,9 @@ export function calculatePartyStats(rows: GuestWithResponse[]): PartyStats {
 
     if (response.plus_one_status === "approved") {
       stats.approvedPlusOnes += response.plus_one_approved_count ?? 0;
-    } else if (response.plus_one_status === "pending") {
-      stats.pendingPlusOneRequests++;
-      stats.pendingPlusOneSeats += response.plus_one_count;
     }
   }
 
   stats.expectedHeadcount = stats.attending + stats.approvedPlusOnes;
-  stats.headcountIfAllApproved = stats.expectedHeadcount + stats.pendingPlusOneSeats;
   return stats;
 }

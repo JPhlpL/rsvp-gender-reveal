@@ -6,7 +6,6 @@ vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/repositories/responseRepository", () => ({
   responseRepository: {
     getResponseByGuestId: vi.fn(),
-    updatePlusOneDecision: vi.fn(),
     upsertAdminResponse: vi.fn(),
     deleteResponse: vi.fn(),
   },
@@ -15,7 +14,7 @@ vi.mock("@/repositories/responseRepository", () => ({
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { responseRepository } from "@/repositories/responseRepository";
 import { revalidatePath } from "next/cache";
-import { decidePlusOneAction, resetAnswerAction, saveAdminAnswerAction } from "./response";
+import { resetAnswerAction, saveAdminAnswerAction } from "./response";
 
 function form(fields: Record<string, string>): FormData {
   const fd = new FormData();
@@ -32,43 +31,6 @@ const pendingThree = makeResponse({
 beforeEach(() => {
   vi.mocked(requireAdmin).mockReset();
   vi.mocked(responseRepository.getResponseByGuestId).mockReset().mockResolvedValue(pendingThree);
-  vi.mocked(responseRepository.updatePlusOneDecision).mockReset().mockResolvedValue(pendingThree);
-});
-
-describe("decidePlusOneAction", () => {
-  it("checks the admin before anything else", async () => {
-    await decidePlusOneAction("g1", { approve: false });
-    expect(requireAdmin).toHaveBeenCalledTimes(1);
-  });
-
-  it("approves fewer than requested", async () => {
-    const result = await decidePlusOneAction("g1", { approve: true, count: 2 });
-    expect(result).toEqual({ success: true });
-    expect(responseRepository.updatePlusOneDecision).toHaveBeenCalledWith("g1", {
-      plus_one_status: "approved",
-      plus_one_approved_count: 2,
-    });
-  });
-
-  it("refuses approving more than requested", async () => {
-    const result = await decidePlusOneAction("g1", { approve: true, count: 4 });
-    expect(result).toEqual({ error: "Pick between 1 and 3" });
-    expect(responseRepository.updatePlusOneDecision).not.toHaveBeenCalled();
-  });
-
-  it("declines with zero allowed", async () => {
-    await decidePlusOneAction("g1", { approve: false });
-    expect(responseRepository.updatePlusOneDecision).toHaveBeenCalledWith("g1", {
-      plus_one_status: "declined",
-      plus_one_approved_count: 0,
-    });
-  });
-
-  it("reports a missing request", async () => {
-    vi.mocked(responseRepository.getResponseByGuestId).mockResolvedValue(makeResponse());
-    const result = await decidePlusOneAction("g1", { approve: false });
-    expect(result).toEqual({ error: "This guest has no plus-one request." });
-  });
 });
 
 describe("saveAdminAnswerAction", () => {

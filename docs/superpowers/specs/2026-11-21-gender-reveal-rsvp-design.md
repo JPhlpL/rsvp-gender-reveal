@@ -140,7 +140,7 @@ Today is 2026-11-21. Links must go out within days so guests can answer before D
 | `/rsvp/error` | Guest | Invalid link |
 | `/invitation` | Anyone | Public showcase of the invitation, with a note in place of the RSVP form (added 2026-11-23, §11) |
 | `/login` | Admin | Email and password sign-in |
-| `/dashboard` | Admin | Stats, plus-one requests card, Settings card |
+| `/dashboard` | Admin | Settings card, stats (the plus-one requests card was removed on 2026-11-23, §7.7) |
 | `/dashboard/guests` | Admin | Guest list (table on desktop, cards on mobile) |
 
 A wrong or outdated name in the slug redirects to the canonical slug, as in the wedding repo.
@@ -234,6 +234,8 @@ Every state ends with: "Need to change something? Message Philip & Vera."
 
 ### 7.7 Plus-one approval
 
+> **Removed on 2026-11-23.** Guests can no longer ask for plus-ones (the question was removed and the server stores every guest answer with 0), and plus-ones the couple set from the dashboard are saved as approved (§7.14). Nothing creates a request any more, so the "Plus-one requests" card, its approve/decline action and the "Plus-one requests waiting" stat were removed. The `pending` and `declined` values stay in the database enum; old rows with them are simply not counted. The original design follows for reference.
+
 - **A response with count > 0** is stored with `plus_one_status = 'pending'`. Otherwise the status is `'none'`.
 - **The dashboard "Plus-one requests" card** lists pending requests with the guest's name, count, names and message. Each one has:
   - **Approve:** a number from 1 up to the requested count, defaulting to the requested count, saved to `plus_one_approved_count`.
@@ -245,8 +247,7 @@ Every state ends with: "Need to change something? Message Philip & Vera."
 ### 7.8 Dashboard stats
 
 - **Response counts:** Invited (rows), Attending, Not attending, No answer yet.
-- **Expected headcount:** attending guests plus approved plus-ones. Also show "if all pending requests are approved."
-- **Pending plus-one requests:** the count.
+- **Expected headcount:** attending guests plus approved plus-ones, with the breakdown as its subtitle (e.g. "12 guests + 3 plus-ones"). (Until 2026-11-23 it also showed "if all pending requests are approved", next to a "Pending plus-one requests" count; both removed with §7.7.)
 - **Team Pink vs Team Blue:** guesses from attending guests, shown with equal visual weight.
 - **Expanding cards:** each card opens a filtered table, as in the wedding.
 - **Excel export columns:** Name, Phone, Email, Status, Guess, Plus-ones requested, Plus-one names, Plus-one status, Plus-ones approved, Message, Admin notes, Answered at.

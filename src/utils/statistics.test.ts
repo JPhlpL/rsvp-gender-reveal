@@ -39,10 +39,7 @@ describe("calculatePartyStats", () => {
       notAttending: 1,
       noAnswer: 1,
       approvedPlusOnes: 2,
-      pendingPlusOneRequests: 1,
-      pendingPlusOneSeats: 3,
       expectedHeadcount: 5,
-      headcountIfAllApproved: 8,
       teamPink: 2,
       teamBlue: 1,
     });
