@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026-11-23] Showcase invitation
+
+- **New public page `/invitation`:** anyone can open it to see the invitation (envelope, photos, dress code, venue, prizes, Gift Guide, closing). The RSVP form is replaced by "Please RSVP using the personal link Philip & Vera sent you." It saves nothing and is hidden from search engines.
+- The list of pages that don't need a sign-in moved to `src/lib/public-routes.ts` (with tests) and now includes `/invitation`.
+
 ## [2026-11-23] Invitation updates
 
 - **No more "Bringing anyone?":** the plus-one question is gone from the invitation, and the server ignores plus-ones sent by a guest (e.g. from a page opened before this change). The couple can still record companions from the dashboard with "Edit answer".

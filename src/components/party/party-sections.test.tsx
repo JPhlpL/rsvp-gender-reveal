@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { makeResponse } from "@/test/factories";
 import { AnswerStatusCard } from "./answer-status-card";
 import { GiftGuide } from "./gift-guide";
+import { RsvpShowcaseNote } from "./rsvp-showcase-note";
 
 describe("AnswerStatusCard", () => {
   it("keeps reminding a girl guesser to wear pink after they answer", () => {
@@ -34,5 +35,16 @@ describe("GiftGuide", () => {
     expect(html).toContain(
       "Having you celebrate with us is truly all we could ask for. However, if you’d like to give a gift, gender-neutral clothing, everyday baby essentials, or nursery items would mean the world to us. Thank you so much!"
     );
+  });
+});
+
+describe("RsvpShowcaseNote", () => {
+  it("points visitors to their personal link instead of showing a form", () => {
+    const html = renderToStaticMarkup(<RsvpShowcaseNote />);
+    expect(html).toContain("RSVP");
+    expect(html).toContain("Please RSVP using the personal link Philip &amp; Vera sent you.");
+    expect(html).toContain("Don&#x27;t have one yet? Message Philip &amp; Vera.");
+    expect(html).not.toContain("<form");
+    expect(html).not.toContain("<input");
   });
 });

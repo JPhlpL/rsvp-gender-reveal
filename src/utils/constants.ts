@@ -38,6 +38,8 @@ export const COPY_MINI_QUESTION = "Mini Vera or Mini Philip?";
 export const COPY_PRIZES = "A lot of gift and cash prizes are waiting for you!";
 export const COPY_CLOSING = "We can't wait to see you, celebrate, and guess with you!";
 export const COPY_CHANGE_SOMETHING = "Need to change something? Message Philip & Vera.";
+export const COPY_SHOWCASE_RSVP_NOTE = "Please RSVP using the personal link Philip & Vera sent you.";
+export const COPY_SHOWCASE_NO_LINK = "Don't have one yet? Message Philip & Vera.";
 export const COPY_GIFT_GUIDE_TITLE = "Gift Guide";
 /** Verbatim from the couple. */
 export const COPY_GIFT_GUIDE_BODY =

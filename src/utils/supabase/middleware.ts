@@ -1,17 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-
-const publicRoutes = [
-  "/login",
-  "/rsvp",
-  "/opengraph-image",
-];
-
-function isPublicRoute(pathname: string) {
-  return publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`)
-  );
-}
+import { isPublicRoute } from "@/lib/public-routes";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });

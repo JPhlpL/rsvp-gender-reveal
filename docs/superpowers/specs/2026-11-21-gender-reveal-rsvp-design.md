@@ -138,6 +138,7 @@ Today is 2026-11-21. Links must go out within days so guests can answer before D
 | `/rsvp/[guestSlug]` | Guest | Invitation plus one of three states: RSVP form, "your answer" status view, or closed view |
 | `/rsvp/[guestSlug]/thank-you` | Guest | Shown after submitting |
 | `/rsvp/error` | Guest | Invalid link |
+| `/invitation` | Anyone | Public showcase of the invitation, with a note in place of the RSVP form (added 2026-11-23, §11) |
 | `/login` | Admin | Email and password sign-in |
 | `/dashboard` | Admin | Stats, plus-one requests card, Settings card |
 | `/dashboard/guests` | Admin | Guest list (table on desktop, cards on mobile) |
@@ -429,3 +430,4 @@ Requested by the couple after the site went live:
 3. **Live dress-code reminder.** Picking a guess in the form shows "Wear pink!" or "Wear blue!" at once. The status card after answering keeps "Your guess: Girl. Wear pink!" / "Your guess: Boy. Wear blue!".
 4. **Gift Guide section** after the RSVP section (§7.3).
 5. **Grammar fixes** to guest-facing text: "You're invited to the" (was "our", which clashed with "of Philip & Vera"); the "Wear your guess!" line; "…waiting for you!" on the prizes teaser; "We can't wait to see you, celebrate, and guess with you!".
+6. **Public showcase page, `/invitation`.** The couple asked for a link anyone can open to show off the invitation. It's the guest page without a guest: envelope, header, photo frames, "Wear your guess!", venue, prizes, Gift Guide and closing. The RSVP section shows "Please RSVP using the personal link Philip & Vera sent you. Don't have one yet? Message Philip & Vera." It reads and writes no guest data, is hidden from search engines (`noindex`), and is on the auth middleware's public-route list (`src/lib/public-routes.ts`). This reverses the earlier non-goal of not carrying over the wedding's `/general-invitation`.
