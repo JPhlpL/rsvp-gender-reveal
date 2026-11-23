@@ -2,6 +2,8 @@
 
 ## [2026-11-23] Personalized links switch
 
+- **Baby items background:** faint onesies, bottles, pacifiers, rattles, stars, clouds and balloons scattered down the whole invitation (guest links and `/invitation`), equal pink and blue. Wide screens fill the side margins; phones show smaller items peeking in from the edges. Positions come from a fixed seed (`src/lib/baby-pattern.ts`), so they look random but render identically on server and browser.
+
 - **New "Personalized links" switch** in the dashboard's RSVP Settings card (on by default, so nothing changes until it's flipped).
   - **On:** as before. Guests are added first and answer from their personal link; `/invitation` is a showcase without a form.
   - **Off:** `/invitation` shows the RSVP form and anyone can answer, like a Google Form. Each answer adds the person to the guest list with a "via general link" label, and they land on the normal thank-you page, which offers "Fill in the form again" so one phone can answer for several people.

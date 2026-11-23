@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BabyPatternBackground } from "@/components/party/baby-pattern-background";
 import { GiftGuide } from "@/components/party/gift-guide";
 import { MiniFrames } from "@/components/party/mini-frames";
 import { PartyClosing } from "@/components/party/party-closing";
@@ -46,6 +47,7 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
 
   return (
     <main className="relative min-h-screen overflow-x-hidden">
+      <BabyPatternBackground />
       <PartyIntro>
         <PartyHeader />
         <PartyDivider />
