@@ -47,8 +47,9 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
 
   return (
     <main className="relative min-h-screen overflow-x-hidden">
-      <BabyPatternBackground />
       <PartyIntro>
+        {/* Inside the intro, so the baby items fade in with the invitation, not behind the envelope */}
+        <BabyPatternBackground />
         <PartyHeader />
         <PartyDivider />
         <MiniFrames />

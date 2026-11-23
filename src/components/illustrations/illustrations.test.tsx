@@ -14,11 +14,16 @@ describe("illustrations", () => {
         "Clothespin",
         "Cloud",
         "Crib",
+        "Footprints",
+        "Heart",
+        "Moon",
         "Onesie",
         "Pacifier",
         "PartyMark",
         "Rattle",
+        "Sock",
         "Star",
+        "TeddyBear",
       ].sort()
     );
   });

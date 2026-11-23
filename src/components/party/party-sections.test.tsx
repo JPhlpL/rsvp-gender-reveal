@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
+import { BABY_PATTERN } from "@/lib/baby-pattern";
 import { makeResponse } from "@/test/factories";
 import { AnswerStatusCard } from "./answer-status-card";
+import { BabyPatternBackground } from "./baby-pattern-background";
 import { GiftGuide } from "./gift-guide";
 import { RsvpShowcaseNote } from "./rsvp-showcase-note";
 
@@ -46,5 +48,20 @@ describe("RsvpShowcaseNote", () => {
     expect(html).toContain("Don&#x27;t have one yet? Message Philip &amp; Vera.");
     expect(html).not.toContain("<form");
     expect(html).not.toContain("<input");
+  });
+});
+
+describe("BabyPatternBackground", () => {
+  const html = renderToStaticMarkup(<BabyPatternBackground />);
+
+  it("draws one baby item per pattern entry, hidden from screen readers", () => {
+    expect(html.match(/<svg/g)?.length).toBe(BABY_PATTERN.length);
+    expect(html).toMatch(/^<div aria-hidden="true"/);
+  });
+
+  it("places wide-screen items in the margins beside the invitation column", () => {
+    // Left margin measured from the page edge, right margin mirrored from the other edge.
+    expect(html).toMatch(/--x:calc\(\(50% - 18rem\) \* 0\.\d+\)/);
+    expect(html).toMatch(/--x:calc\(100% - \(50% - 18rem\) \* 0\.\d+\)/);
   });
 });

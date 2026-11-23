@@ -1,8 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { BABY_PATTERN, buildBabyPattern } from "./baby-pattern";
+import { BABY_PATTERN, buildBabyPattern, type BabyPatternItem } from "./baby-pattern";
 
-const inDesktopMargins = (x: number) => (x >= 1 && x <= 27) || (x >= 73 && x <= 99);
-const atPhoneEdges = (x: number) => (x >= 0 && x <= 7) || (x >= 93 && x <= 100);
+const atPhoneEdge = (i: BabyPatternItem) =>
+  i.side === "left" ? i.leftMobile >= 0 && i.leftMobile <= 7 : i.leftMobile >= 93 && i.leftMobile <= 100;
+
+/** Items of one lane (side + inner/outer), top to bottom. */
+function lanes(items: readonly BabyPatternItem[]): BabyPatternItem[][] {
+  const byLane = new Map<string, BabyPatternItem[]>();
+  for (const item of items) {
+    const key = `${item.side}-${item.across < 0.5 ? "outer" : "inner"}`;
+    byLane.set(key, [...(byLane.get(key) ?? []), item]);
+  }
+  return [...byLane.values()].map((lane) => [...lane].sort((a, b) => a.top - b.top));
+}
 
 describe("buildBabyPattern", () => {
   it("lays out the same items on every render, so server and browser match", () => {
@@ -10,21 +20,45 @@ describe("buildBabyPattern", () => {
     expect(BABY_PATTERN).toEqual(buildBabyPattern());
   });
 
-  it("scatters items down the whole page, on both sides", () => {
-    expect(BABY_PATTERN.length).toBeGreaterThanOrEqual(30);
+  it("scatters plenty of items down the whole page, on both sides", () => {
+    expect(BABY_PATTERN.length).toBeGreaterThanOrEqual(100);
     for (let band = 0; band < 10; band++) {
       const inBand = BABY_PATTERN.filter((i) => i.top >= band * 10 && i.top < band * 10 + 10);
-      expect(inBand.some((i) => i.left < 50)).toBe(true);
-      expect(inBand.some((i) => i.left > 50)).toBe(true);
+      expect(inBand.some((i) => i.side === "left")).toBe(true);
+      expect(inBand.some((i) => i.side === "right")).toBe(true);
     }
   });
 
-  it("keeps items in the side margins on wide screens, clear of the invitation column", () => {
-    expect(BABY_PATTERN.every((i) => inDesktopMargins(i.left))).toBe(true);
+  it("keeps items inside the side margins on wide screens, clear of the invitation column", () => {
+    expect(BABY_PATTERN.every((i) => i.across >= 0.05 && i.across <= 0.95)).toBe(true);
+  });
+
+  it("fills each margin with an outer and an inner lane", () => {
+    for (const side of ["left", "right"] as const) {
+      const onSide = BABY_PATTERN.filter((i) => i.side === side);
+      expect(onSide.some((i) => i.across < 0.5)).toBe(true);
+      expect(onSide.some((i) => i.across > 0.5)).toBe(true);
+    }
   });
 
   it("pushes items to the very edges on phones", () => {
-    expect(BABY_PATTERN.every((i) => atPhoneEdges(i.leftMobile))).toBe(true);
+    expect(BABY_PATTERN.every(atPhoneEdge)).toBe(true);
+  });
+
+  it("never piles items on top of each other within a lane", () => {
+    for (const lane of lanes(BABY_PATTERN)) {
+      for (let n = 1; n < lane.length; n++) {
+        expect(lane[n].top - lane[n - 1].top).toBeGreaterThanOrEqual(2);
+      }
+    }
+  });
+
+  it("never repeats the same item twice in a row within a lane", () => {
+    for (const lane of lanes(BABY_PATTERN)) {
+      for (let n = 1; n < lane.length; n++) {
+        expect(lane[n].kind).not.toBe(lane[n - 1].kind);
+      }
+    }
   });
 
   it("uses pink and blue equally", () => {
@@ -34,7 +68,11 @@ describe("buildBabyPattern", () => {
     expect(pink).toBe(blue);
   });
 
-  it("mixes several kinds of baby items", () => {
-    expect(new Set(BABY_PATTERN.map((i) => i.kind)).size).toBeGreaterThanOrEqual(6);
+  it("mixes every kind of baby item, including the new ones", () => {
+    const kinds = new Set(BABY_PATTERN.map((i) => i.kind));
+    for (const kind of ["heart", "footprints", "sock", "teddy", "moon", "crib"] as const) {
+      expect(kinds.has(kind)).toBe(true);
+    }
+    expect(kinds.size).toBeGreaterThanOrEqual(13);
   });
 });
