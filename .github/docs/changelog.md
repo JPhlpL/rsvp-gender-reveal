@@ -1,5 +1,9 @@
 # Changelog
 
+## [2026-11-23] Background music
+
+- **Music player** on the invitation pages (guest links and `/invitation`): the party song (`public/party/bg_music.mp3`) starts when the guest taps the envelope and loops. A small bar at the bottom lets guests pause, play, mute and change the volume. iPhones only get mute, because they ignore volume set by a page (their side buttons still work). No album cover, title, skip or seek. Not shown on the thank-you page or the dashboard.
+
 ## [2026-11-23] RSVP heading and Gift Guide order
 
 - Under the RSVP heading, "Please RSVP by Tuesday, December 1" is replaced by "Please answer carefully so we can prepare everything for you." No date is shown; the deadline still closes the form on time.

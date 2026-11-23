@@ -48,6 +48,11 @@ export const COPY_GIFT_GUIDE_TITLE = "Gift Guide";
 export const COPY_GIFT_GUIDE_BODY =
   "Having you celebrate with us is truly all we could ask for. However, if you’d like to give a gift, gender-neutral clothing, everyday baby essentials, or nursery items would mean the world to us. Thank you so much!";
 
+// --- Background music (invitation pages only) ---
+export const PARTY_MUSIC_SRC = "/party/bg_music.mp3";
+export const PARTY_MUSIC_DEFAULT_VOLUME = 0.7;
+export const COPY_MUSIC_LABEL = "Background music";
+
 // --- Assets (drop the couple's baby photos at these paths under /public) ---
 export const PARTY_PHOTO_PATHS = {
   vera: "/party/mini-vera.jpg",

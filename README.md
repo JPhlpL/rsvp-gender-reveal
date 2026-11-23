@@ -61,4 +61,4 @@ All rights reserved.
 3. **Real address:** set `NEXT_PUBLIC_APP_URL` to the final domain *before* copying any guest links — copied links keep whatever address was set when copied. Links copied on localhost won't work for guests.
 4. **Admins:** create each admin with `npm run admin:create` (pointed at the cloud project's URL and service-role key) and list their emails in `ADMIN_EMAILS`. Both are needed: the database only shares guest data with users the script marked as admin, so an account made by hand in the Supabase dashboard — or by someone signing up — sees nothing.
 5. **Email notifications (optional):** set the EmailJS variables. Template fields: `guest_name`, `respondent_name`, `attendance_status`, `guess`, `plus_one_request`, `message`, `submitted_at`, `dashboard_url`, `to_email`.
-6. **Music (optional):** not included; add a song and a player if wanted.
+6. **Music:** done. The song is `public/party/bg_music.mp3`; to change it, replace that file (keep the name).

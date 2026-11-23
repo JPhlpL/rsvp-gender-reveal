@@ -17,6 +17,7 @@ vi.mock("next/navigation", () => ({
 import { BabyPatternBackground } from "@/components/party/baby-pattern-background";
 import { GiftGuide } from "@/components/party/gift-guide";
 import { PartyIntro } from "@/components/party/party-intro";
+import { PartyMusicPlayer } from "@/components/party/party-music-player";
 import { RsvpSection } from "@/components/party/rsvp-section";
 import { ShowcaseRsvpSection } from "@/components/party/showcase-rsvp-section";
 import { rsvpPathSegment } from "@/lib/rsvp-path";
@@ -75,6 +76,12 @@ describe.each(pages)("%s", (_name, render) => {
     expect(content.some((child) => isValidElement(child) && child.type === BabyPatternBackground)).toBe(
       true
     );
+  });
+
+  it("has the music player, ready before the envelope is tapped", async () => {
+    const main = (await render()) as ReactElement<{ children: ReactNode }>;
+    const onPage = Children.toArray(main.props.children);
+    expect(onPage.some((child) => isValidElement(child) && child.type === PartyMusicPlayer)).toBe(true);
   });
 
   it("shows the Gift Guide before the RSVP section", async () => {

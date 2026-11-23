@@ -112,7 +112,7 @@ Today is 2026-11-21. Links must go out within days so guests can answer before D
   - The envelope intro (`wedding-intro.tsx`, `wedding-envelope.tsx`), restyled
   - The venue map (`wedding-venue-map.tsx`)
   - The guest notes callout ("A note for you")
-- **Music player:** only if the couple supplies a song (see §8). Otherwise remove it.
+- **Music player:** only if the couple supplies a song (see §8). Otherwise remove it. (Song supplied 2026-11-23; see §14.)
 - **Email notification** (`services/emailService.ts`): it already skips itself when not configured, so keep it, with the template fields updated.
 - **CI:** the workflow (lint and type-check). Add tests (see §7.13).
 
@@ -455,3 +455,12 @@ The couple want to choose between two ways of collecting RSVPs: personal links f
 ## 13. Baby items background (2026-11-23)
 
 The couple asked for baby items across the whole invitation, keeping the current style, then for more of them. `BabyPatternBackground` draws 120 faint illustrations from 13 kinds (onesie, bottle, pacifier, rattle, star, cloud, balloons, heart, footprints, sock, teddy bear, sleepy moon, crib) behind the content of both invitation pages. Layout (`src/lib/baby-pattern.ts`, tested): 30 rows spread down the page height, each with an outer and an inner lane per side; the inner lane sits half a row lower, so the lanes zig-zag. Each item's kind is picked at random, never the same kind twice in a row within a lane. Wide screens (md+) place items in the side margins beside the invitation column (`calc((50% - 18rem) * across)`, measured from each page edge; the column is `max-w-xl`), so they stay clear of the text at any width, at 50% opacity. Phones place them at the very edges (1–6% and 94–99%), smaller and at 30% opacity, so they never sit on the text. Tinted items (onesie, pacifier, star, heart, footprints, sock) alternate pink and blue in equal numbers; the teddy bear has one pink and one blue ear and a pink-and-blue bow tie. A fixed seed keeps the server and browser render identical. The layer lives inside `PartyIntro`'s revealed content (`-z-10`, behind the sections), so the items fade in with the invitation instead of showing bunched up behind the envelope while the page is still one screen tall. Decorative only: `aria-hidden`, no pointer events.
+
+## 14. Background music (2026-11-23)
+
+The couple supplied a song (`public/party/bg_music.mp3`) and asked for a music player like the wedding's, kept simple and without the album cover.
+
+- **Where:** the invitation pages only: guest links (`/rsvp/[guestSlug]`) and `/invitation`. Not the thank-you page or the dashboard.
+- **When:** hidden until the guest taps the envelope. That tap starts the song, because browsers only allow sound in direct response to a tap: the envelope announces the tap synchronously (`src/lib/party-music.ts`) and `PartyMusicPlayer` calls `play()` inside it. If a browser still refuses, the Play button works. The song loops and is only downloaded once it plays (`preload="none"`).
+- **Controls:** a compact bar pinned to the bottom of the screen, just above the site-wide copyright line: play/pause, "Background music" (the file has no title or artist tags), mute, and a volume slider (starts at 70%). iPhones ignore volume set by a page (only the side buttons change it), so the slider is shown only where it works (`canAdjustVolume`); mute works everywhere.
+- **Left out of the wedding player on purpose:** album cover, song title and artist, skip and seek, minimize. The invitation pages get extra bottom padding so the bar never covers the closing or footer.

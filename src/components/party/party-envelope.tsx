@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { PartyMark } from "@/components/illustrations";
+import { announceEnvelopeTapped } from "@/lib/party-music";
 import { EVENT_DATE_SHORT, EVENT_HOSTS, EVENT_TITLE } from "@/utils/constants";
 
 const PARTICLES = [0, 1, 2, 3, 4, 5];
@@ -12,6 +13,8 @@ export function PartyEnvelope({ onOpen }: { onOpen: () => void }) {
 
   const handleOpen = useCallback(() => {
     if (phase !== "sealed") return;
+    // Starts the background music while we're still inside the guest's tap.
+    announceEnvelopeTapped();
     setPhase("opening");
     setTimeout(() => setPhase("exiting"), 1600);
     setTimeout(onOpen, 2400);

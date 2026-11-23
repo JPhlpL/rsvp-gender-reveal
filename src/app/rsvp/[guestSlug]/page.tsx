@@ -7,6 +7,7 @@ import { PartyDivider } from "@/components/party/party-divider";
 import { PartyFooter } from "@/components/party/party-footer";
 import { PartyHeader } from "@/components/party/party-header";
 import { PartyIntro } from "@/components/party/party-intro";
+import { PartyMusicPlayer } from "@/components/party/party-music-player";
 import { PartyVenue } from "@/components/party/party-venue";
 import { PrizesTeaser } from "@/components/party/prizes-teaser";
 import { RsvpSection } from "@/components/party/rsvp-section";
@@ -46,7 +47,7 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
   const view = resolveInvitationView(response, settings, new Date());
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden">
+    <main className="relative min-h-screen overflow-x-hidden pb-28">
       <PartyIntro>
         {/* Inside the intro, so the baby items fade in with the invitation, not behind the envelope */}
         <BabyPatternBackground />
@@ -66,6 +67,8 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
         <PartyClosing />
         <PartyFooter />
       </PartyIntro>
+      {/* Outside the intro, so it is ready to start the song on the envelope tap */}
+      <PartyMusicPlayer />
     </main>
   );
 }
