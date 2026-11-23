@@ -12,12 +12,12 @@ import { WearYourGuess } from "@/components/party/wear-your-guess";
 
 /**
  * Public showcase of the invitation: the same page guests get, with a note in place of
- * the RSVP form. Reads and writes no guest data.
+ * the RSVP form. Reads and writes no guest data. The envelope shows on every visit.
  */
 export default function ShowcaseInvitationPage() {
   return (
     <main className="relative min-h-screen overflow-x-hidden">
-      <PartyIntro>
+      <PartyIntro rememberOpened={false}>
         <PartyHeader />
         <PartyDivider />
         <MiniFrames />

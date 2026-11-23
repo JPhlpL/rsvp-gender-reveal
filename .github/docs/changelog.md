@@ -2,7 +2,7 @@
 
 ## [2026-11-23] Showcase invitation
 
-- **New public page `/invitation`:** anyone can open it to see the invitation (envelope, photos, dress code, venue, prizes, Gift Guide, closing). The RSVP form is replaced by "Please RSVP using the personal link Philip & Vera sent you." It saves nothing and is hidden from search engines.
+- **New public page `/invitation`:** anyone can open it to see the invitation (envelope, photos, dress code, venue, prizes, Gift Guide, closing). The RSVP form is replaced by "Please RSVP using the personal link Philip & Vera sent you." It saves nothing and is hidden from search engines. The envelope shows on every visit (guest links still remember it for the browser session).
 - The list of pages that don't need a sign-in moved to `src/lib/public-routes.ts` (with tests) and now includes `/invitation`.
 
 ## [2026-11-23] Invitation updates
