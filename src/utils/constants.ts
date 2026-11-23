@@ -51,9 +51,6 @@ export const PARTY_PHOTO_PATHS = {
   philip: "/party/mini-philip.jpg",
 } as const;
 
-// --- Browser storage keys ---
-export const STORAGE_PARTY_ENVELOPE_OPENED = "party-envelope-opened";
-
 // --- Guest UUID (invitation links) ---
 export const UUID_V4_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

@@ -2,9 +2,11 @@
 
 ## [2026-11-23] Showcase invitation
 
+- **Envelope on every visit, everywhere:** guest links no longer remember that the envelope was opened, so it shows each time a link is opened, like the showcase page. The session-storage flag (`src/lib/session-flag.ts`) was removed.
+
 - **Real baby photos:** `public/party/mini-vera.jpg` (pink frame) and `public/party/mini-philip.jpg` (blue frame) replace the placeholder outlines on guest links and the showcase page.
 
-- **New public page `/invitation`:** anyone can open it to see the invitation (envelope, photos, dress code, venue, prizes, Gift Guide, closing). The RSVP form is replaced by "Please RSVP using the personal link Philip & Vera sent you." It saves nothing and is hidden from search engines. The envelope shows on every visit (guest links still remember it for the browser session).
+- **New public page `/invitation`:** anyone can open it to see the invitation (envelope, photos, dress code, venue, prizes, Gift Guide, closing). The RSVP form is replaced by "Please RSVP using the personal link Philip & Vera sent you." It saves nothing and is hidden from search engines. The envelope shows on every visit.
 - The list of pages that don't need a sign-in moved to `src/lib/public-routes.ts` (with tests) and now includes `/invitation`.
 
 ## [2026-11-23] Invitation updates

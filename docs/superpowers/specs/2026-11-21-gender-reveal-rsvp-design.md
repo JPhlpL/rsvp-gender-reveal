@@ -147,7 +147,7 @@ A wrong or outdated name in the slug redirects to the canonical slug, as in the 
 
 ### 7.3 Guest page, top to bottom
 
-1. **Envelope intro.** A pink-and-blue envelope with a cartoon seal (a "?" or a baby bottle). The guest taps to open, and "opened" is remembered in sessionStorage, as in the wedding.
+1. **Envelope intro.** A pink-and-blue envelope with a cartoon seal (a "?" or a baby bottle). The guest taps to open. Since 2026-11-23 it shows on every visit (it used to be remembered in sessionStorage, as in the wedding).
 2. **Header.** A cluster of cartoon illustrations (crib, baby bottle, onesie, balloons), then "You're invited to the", "Gender Reveal & Baby Shower", "of Philip & Vera", and "Saturday, December 5, 2026 · 5:00 PM".
 3. **"Mini Vera or Mini Philip?"**
    - Two slightly tilted photo-print frames, each with a cartoon clothespin.
@@ -430,5 +430,5 @@ Requested by the couple after the site went live:
 3. **Live dress-code reminder.** Picking a guess in the form shows "Wear pink!" or "Wear blue!" at once. The status card after answering keeps "Your guess: Girl. Wear pink!" / "Your guess: Boy. Wear blue!".
 4. **Gift Guide section** after the RSVP section (§7.3).
 5. **Grammar fixes** to guest-facing text: "You're invited to the" (was "our", which clashed with "of Philip & Vera"); the "Wear your guess!" line; "…waiting for you!" on the prizes teaser; "We can't wait to see you, celebrate, and guess with you!".
-6. **Public showcase page, `/invitation`.** The couple asked for a link anyone can open to show off the invitation. It's the guest page without a guest: envelope, header, photo frames, "Wear your guess!", venue, prizes, Gift Guide and closing. The RSVP section shows "Please RSVP using the personal link Philip & Vera sent you. Don't have one yet? Message Philip & Vera." Its envelope shows on every visit (`PartyIntro rememberOpened={false}`), while guest links still remember "opened" for the browser session. It reads and writes no guest data, is hidden from search engines (`noindex`), and is on the auth middleware's public-route list (`src/lib/public-routes.ts`). This reverses the earlier non-goal of not carrying over the wedding's `/general-invitation`.
+6. **Public showcase page, `/invitation`.** The couple asked for a link anyone can open to show off the invitation. It's the guest page without a guest: envelope, header, photo frames, "Wear your guess!", venue, prizes, Gift Guide and closing. The RSVP section shows "Please RSVP using the personal link Philip & Vera sent you. Don't have one yet? Message Philip & Vera." Its envelope shows on every visit. It reads and writes no guest data, is hidden from search engines (`noindex`), and is on the auth middleware's public-route list (`src/lib/public-routes.ts`). This reverses the earlier non-goal of not carrying over the wedding's `/general-invitation`.
 7. **Baby photos added.** The couple supplied both photos: `public/party/mini-vera.jpg` and `public/party/mini-philip.jpg`. The page build's file trace includes them, so the server-side "does the photo exist" check also works on Vercel.

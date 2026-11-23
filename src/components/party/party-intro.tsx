@@ -1,47 +1,15 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-  useSyncExternalStore,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { PartyEnvelope } from "./party-envelope";
-import { isEnvelopeOpen } from "@/lib/envelope";
-import { readSessionFlag, writeSessionFlag } from "@/lib/session-flag";
-import { STORAGE_PARTY_ENVELOPE_OPENED } from "@/utils/constants";
-
-function subscribe(callback: () => void) {
-  window.addEventListener("storage", callback);
-  return () => window.removeEventListener("storage", callback);
-}
-
-interface PartyIntroProps {
-  children: ReactNode;
-  /**
-   * Remember "opened" for the browser session, so a guest reopening their link skips
-   * the envelope. The showcase page passes false: the envelope shows on every visit.
-   */
-  rememberOpened?: boolean;
-}
 
 /**
- * Shows the envelope first, then the invitation. Content mounts once the envelope
- * is opened or the browser is idle, so the intro animation stays smooth.
+ * Shows the envelope first, then the invitation. The envelope shows on every visit.
+ * Content mounts once the envelope is opened or the browser is idle, so the intro
+ * animation stays smooth.
  */
-export function PartyIntro({ children, rememberOpened = true }: PartyIntroProps) {
-  const rememberedOpen = useSyncExternalStore(
-    subscribe,
-    () => readSessionFlag(STORAGE_PARTY_ENVELOPE_OPENED),
-    () => false
-  );
-  const [openedThisVisit, setOpenedThisVisit] = useState(false);
-  const isRevealed = isEnvelopeOpen({
-    remember: rememberOpened,
-    rememberedOpen,
-    openedThisVisit,
-  });
+export function PartyIntro({ children }: { children: ReactNode }) {
+  const [isRevealed, setIsRevealed] = useState(false);
   const [idleMount, setIdleMount] = useState(false);
 
   useEffect(() => {
@@ -72,12 +40,7 @@ export function PartyIntro({ children, rememberOpened = true }: PartyIntroProps)
     };
   }, [isRevealed]);
 
-  const handleOpen = useCallback(() => {
-    setOpenedThisVisit(true);
-    if (!rememberOpened) return;
-    writeSessionFlag(STORAGE_PARTY_ENVELOPE_OPENED);
-    window.dispatchEvent(new Event("storage"));
-  }, [rememberOpened]);
+  const handleOpen = useCallback(() => setIsRevealed(true), []);
 
   return (
     <>
