@@ -1,5 +1,4 @@
 import type { ShowcaseView } from "@/lib/invitation-view";
-import type { PublicSettings } from "@/types/settings";
 import { RsvpClosedCard } from "./rsvp-closed-card";
 import { RsvpForm } from "./rsvp-form";
 import { COPY_RSVP_INTRO } from "@/utils/constants";
@@ -7,11 +6,10 @@ import { RsvpShowcaseNote } from "./rsvp-showcase-note";
 
 interface ShowcaseRsvpSectionProps {
   view: ShowcaseView;
-  settings: PublicSettings;
 }
 
 /** The RSVP part of /invitation, depending on the personalized-links switch (§12). */
-export function ShowcaseRsvpSection({ view, settings }: ShowcaseRsvpSectionProps) {
+export function ShowcaseRsvpSection({ view }: ShowcaseRsvpSectionProps) {
   if (view.kind === "showcase") return <RsvpShowcaseNote />;
 
   return (
@@ -28,7 +26,7 @@ export function ShowcaseRsvpSection({ view, settings }: ShowcaseRsvpSectionProps
         <div className="mt-6">
           {view.kind === "form" && <RsvpForm mode="general" />}
           {view.kind === "closed" && (
-            <RsvpClosedCard reason={view.reason} deadline={settings.rsvp_deadline} />
+            <RsvpClosedCard reason={view.reason} />
           )}
         </div>
       </div>

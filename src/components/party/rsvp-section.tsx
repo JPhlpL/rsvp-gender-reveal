@@ -1,6 +1,5 @@
 import type { InvitationView } from "@/lib/invitation-view";
 import type { InvitationGuest } from "@/repositories/invitationRepository";
-import type { RsvpSettings } from "@/types/settings";
 import { AnswerStatusCard } from "./answer-status-card";
 import { GuestNotesCallout } from "./guest-notes-callout";
 import { RsvpClosedCard } from "./rsvp-closed-card";
@@ -9,12 +8,11 @@ import { RsvpForm } from "./rsvp-form";
 
 interface RsvpSectionProps {
   guest: InvitationGuest;
-  settings: RsvpSettings;
   view: InvitationView;
   slug: string;
 }
 
-export function RsvpSection({ guest, settings, view, slug }: RsvpSectionProps) {
+export function RsvpSection({ guest, view, slug }: RsvpSectionProps) {
   return (
     <section id="rsvp" className="px-4 py-10 sm:py-14" aria-labelledby="rsvp-title">
       <div className="mx-auto max-w-xl">
@@ -33,7 +31,7 @@ export function RsvpSection({ guest, settings, view, slug }: RsvpSectionProps) {
           )}
           {view.kind === "answered" && <AnswerStatusCard response={view.response} />}
           {view.kind === "closed" && (
-            <RsvpClosedCard reason={view.reason} deadline={settings.rsvp_deadline} />
+            <RsvpClosedCard reason={view.reason} />
           )}
         </div>
       </div>

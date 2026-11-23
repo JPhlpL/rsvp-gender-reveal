@@ -160,7 +160,7 @@ A wrong or outdated name in the slug redirects to the canonical slug, as in the 
 6. **Prizes teaser.** "A lot of gift and cash prizes are waiting for you!"
 7. **Gift Guide** (added 2026-11-23, moved above the RSVP section the same day). The couple's text, word for word, in a card with a pink and a blue onesie.
 8. **RSVP section.**
-   - Above the form: "Please answer carefully so we can prepare everything for you." No date: the couple asked on 2026-11-23 not to show one. The deadline still closes the form, and the closed view (§7.6) still names the date.
+   - Above the form: "Please answer carefully so we can prepare everything for you." No date: the couple asked on 2026-11-23 not to show one. The deadline still closes the form; the closed view (§7.6) names no date either.
    - The admin note callout, if the guest has notes.
    - Then the form, the status view (§7.5) or the closed view (§7.6).
 9. **Closing.** "We can't wait to see you, celebrate, and guess with you!", then the footer.
@@ -224,7 +224,7 @@ Every state ends with: "Need to change something? Message Philip & Vera."
 - **The "open" rule:** RSVPs are open when `rsvp_closed` is false **and** (`rsvp_deadline` is null **or** now ≤ `rsvp_deadline`).
   - It's one pure function, used by both the guest page and the submit action, and always evaluated with server time.
 - **Converting the picked date:** `YYYY-MM-DD` becomes `YYYY-MM-DDT23:59:59+08:00`. Displays use `Intl` with `timeZone: "Asia/Manila"`.
-- **Closed view:** the event details stay visible, and the form is replaced by "RSVPs closed on December 1. Message Philip & Vera if you'd still like to come." If an admin closed RSVPs manually before the deadline, it says "RSVPs are closed" without a date.
+- **Closed view:** the event details stay visible, and the form is replaced by "RSVPs are closed. Message Philip & Vera if you'd still like to come." It names no date, whether the deadline passed or an admin closed RSVPs by hand (the couple asked on 2026-11-23 for no dates; it used to say "RSVPs closed on December 1").
   - Guests who already answered still see their status card after the deadline.
 - **The dashboard Settings card has:**
   - A date-only picker, interpreted and displayed in Manila time. A native `<input type="date">` is fine.

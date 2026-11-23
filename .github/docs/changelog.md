@@ -4,6 +4,7 @@
 
 - Under the RSVP heading, "Please RSVP by Tuesday, December 1" is replaced by "Please answer carefully so we can prepare everything for you." No date is shown; the deadline still closes the form on time.
 - The Gift Guide now comes before the RSVP section, on guest links and `/invitation`.
+- After the deadline, the closed message no longer names the date: it says "RSVPs are closed. Message Philip & Vera if you'd still like to come.", the same as when RSVPs are closed by hand.
 
 ## [2026-11-23] Personalized links switch
 

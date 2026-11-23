@@ -40,7 +40,7 @@ export default async function PublicInvitationPage() {
         <PartyDivider />
         <GiftGuide />
         <PartyDivider />
-        <ShowcaseRsvpSection view={view} settings={settings} />
+        <ShowcaseRsvpSection view={view} />
         <PartyDivider />
         <PartyClosing />
         <PartyFooter />

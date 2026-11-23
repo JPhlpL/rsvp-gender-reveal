@@ -21,7 +21,7 @@ import { RsvpSection } from "@/components/party/rsvp-section";
 import { ShowcaseRsvpSection } from "@/components/party/showcase-rsvp-section";
 import { rsvpPathSegment } from "@/lib/rsvp-path";
 import { getInvitationByUuid, getRsvpSettings } from "@/repositories/invitationRepository";
-import { COPY_RSVP_INTRO } from "@/utils/constants";
+import { COPY_RSVP_INTRO, MSG_RSVP_CLOSED } from "@/utils/constants";
 import PublicInvitationPage from "./invitation/page";
 import GuestInvitationPage from "./rsvp/[guestSlug]/page";
 
@@ -90,15 +90,12 @@ describe.each(pages)("%s", (_name, render) => {
 });
 
 describe("the RSVP heading", () => {
-  const deadline = "2026-12-01T15:59:59Z";
-
   const sections: [string, () => ReactElement][] = [
     [
       "on a guest's invitation",
       () => (
         <RsvpSection
           guest={guest}
-          settings={{ rsvp_deadline: deadline, rsvp_closed: false }}
           view={{ kind: "form" }}
           slug={rsvpPathSegment(guest.name, guest.uuid)}
         />
@@ -106,12 +103,7 @@ describe("the RSVP heading", () => {
     ],
     [
       "on the general RSVP form",
-      () => (
-        <ShowcaseRsvpSection
-          view={{ kind: "form" }}
-          settings={{ rsvp_deadline: deadline, rsvp_closed: false, personalized_links: false }}
-        />
-      ),
+      () => <ShowcaseRsvpSection view={{ kind: "form" }} />,
     ],
   ];
 
@@ -119,6 +111,32 @@ describe("the RSVP heading", () => {
     const html = renderToStaticMarkup(section());
     expect(html).toContain(COPY_RSVP_INTRO);
     expect(html).not.toContain("Please RSVP by");
+    expect(html).not.toContain("December");
+  });
+});
+
+describe("the closed message after the deadline", () => {
+  const sections: [string, () => ReactElement][] = [
+    [
+      "on a guest's invitation",
+      () => (
+        <RsvpSection
+          guest={guest}
+          view={{ kind: "closed", reason: "deadline" }}
+          slug={rsvpPathSegment(guest.name, guest.uuid)}
+        />
+      ),
+    ],
+    [
+      "on the general RSVP form",
+      () => <ShowcaseRsvpSection view={{ kind: "closed", reason: "deadline" }} />,
+    ],
+  ];
+
+  it.each(sections)("says RSVPs are closed without naming a date, %s", (_name, section) => {
+    const html = renderToStaticMarkup(section());
+    expect(html).toContain(MSG_RSVP_CLOSED.replace("&", "&amp;").replace("'", "&#x27;"));
+    expect(html).not.toContain("closed on");
     expect(html).not.toContain("December");
   });
 });
