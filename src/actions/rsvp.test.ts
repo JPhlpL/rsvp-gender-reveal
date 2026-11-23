@@ -33,8 +33,6 @@ const attendingWithTwo = form({
   is_attending: "true",
   name: "Ana",
   guess: "girl",
-  plus_one_count: "2",
-  plus_one_names: "Ben, Cy",
 });
 
 beforeEach(() => {
@@ -98,12 +96,41 @@ describe("submitRsvpAction", () => {
         guest_id: "g1",
         is_attending: true,
         guess: "girl",
-        plus_one_count: 2,
-        plus_one_names: "Ben, Cy",
-        plus_one_status: "pending",
+        plus_one_count: 0,
+        plus_one_names: null,
+        plus_one_status: "none",
       })
     );
     expect(after).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores plus-ones a guest sends, e.g. from an invitation opened before the question was removed", async () => {
+    const stale = form({
+      is_attending: "true",
+      name: "Ana",
+      guess: "boy",
+      plus_one_count: "2",
+      plus_one_names: "Ben, Cy",
+    });
+    const result = await submitRsvpAction(UUID, {}, stale);
+    expect(result).toEqual({ success: true });
+    expect(insertGuestResponse).toHaveBeenCalledWith(
+      expect.objectContaining({
+        guess: "boy",
+        plus_one_count: 0,
+        plus_one_names: null,
+        plus_one_status: "none",
+      })
+    );
+  });
+
+  it("does not ask a guest for companions' names", async () => {
+    const result = await submitRsvpAction(
+      UUID,
+      {},
+      form({ is_attending: "true", name: "Ana", guess: "girl", plus_one_count: "3" })
+    );
+    expect(result).toEqual({ success: true });
   });
 
   it("does not refresh the invitation page, so the form can move to the thank-you page", async () => {

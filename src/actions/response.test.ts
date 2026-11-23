@@ -8,12 +8,14 @@ vi.mock("@/repositories/responseRepository", () => ({
     getResponseByGuestId: vi.fn(),
     updatePlusOneDecision: vi.fn(),
     upsertAdminResponse: vi.fn(),
+    deleteResponse: vi.fn(),
   },
 }));
 
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { responseRepository } from "@/repositories/responseRepository";
-import { decidePlusOneAction, saveAdminAnswerAction } from "./response";
+import { revalidatePath } from "next/cache";
+import { decidePlusOneAction, resetAnswerAction, saveAdminAnswerAction } from "./response";
 
 function form(fields: Record<string, string>): FormData {
   const fd = new FormData();
@@ -156,5 +158,32 @@ describe("saveAdminAnswerAction", () => {
     const result = await saveAdminAnswerAction("g2", {}, form({ is_attending: "true", name: "Two" }));
     expect(result).toEqual({ error: "Pick your guess: girl or boy" });
     expect(responseRepository.upsertAdminResponse).not.toHaveBeenCalled();
+  });
+});
+
+describe("resetAnswerAction", () => {
+  beforeEach(() => {
+    vi.mocked(responseRepository.deleteResponse).mockReset().mockResolvedValue(undefined);
+    vi.mocked(revalidatePath).mockReset();
+  });
+
+  it("checks the admin before deleting anything", async () => {
+    vi.mocked(requireAdmin).mockRejectedValueOnce(new Error("NEXT_REDIRECT"));
+    await expect(resetAnswerAction("g3")).rejects.toThrow("NEXT_REDIRECT");
+    expect(responseRepository.deleteResponse).not.toHaveBeenCalled();
+  });
+
+  it("deletes the guest's answer so their link shows the form again", async () => {
+    const result = await resetAnswerAction("g3");
+    expect(result).toEqual({ success: true });
+    expect(responseRepository.deleteResponse).toHaveBeenCalledWith("g3");
+    expect(revalidatePath).toHaveBeenCalledWith("/dashboard");
+    expect(revalidatePath).toHaveBeenCalledWith("/dashboard/guests");
+  });
+
+  it("reports a failure without claiming success", async () => {
+    vi.mocked(responseRepository.deleteResponse).mockRejectedValue(new Error("db down"));
+    const result = await resetAnswerAction("g3");
+    expect(result).toEqual({ error: "Couldn't reset the answer. Please try again." });
   });
 });

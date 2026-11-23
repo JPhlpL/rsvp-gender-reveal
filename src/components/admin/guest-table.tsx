@@ -18,6 +18,7 @@ import { DeleteGuestDialog } from "./delete-guest-dialog";
 import { CopyLinkModal } from "./copy-link-modal";
 import { ViewResponseModal } from "./view-response-modal";
 import { EditAnswerModal } from "./edit-answer-modal";
+import { ResetAnswerDialog } from "./reset-answer-dialog";
 import type { AttendanceStatus, GuestWithResponse } from "@/types/guest";
 import { ADMIN_GUEST_TABLE_PAGE_SIZE } from "@/utils/constants";
 import { guessLabel, plusOneSummary } from "@/lib/guest-labels";
@@ -164,6 +165,7 @@ export function GuestTable({ guests }: GuestTableProps) {
             <div className="flex items-center justify-center gap-1">
               <ViewResponseModal guest={guest} />
               <EditAnswerModal guest={guest} />
+              <ResetAnswerDialog guest={guest} />
               <CopyLinkModal guest={guest} />
               <EditGuestModal guest={guest} />
               <DeleteGuestDialog guest={guest} />

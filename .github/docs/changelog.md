@@ -1,5 +1,13 @@
 # Changelog
 
+## [2026-11-23] Invitation updates
+
+- **No more "Bringing anyone?":** the plus-one question is gone from the invitation, and the server ignores plus-ones sent by a guest (e.g. from a page opened before this change). The couple can still record companions from the dashboard with "Edit answer".
+- **Reset answer:** a new dashboard action (↺ on each guest row and card) deletes a guest's answer, so their link shows the RSVP form again. It asks for confirmation; the guest can only answer again while RSVPs are open. New migration `20261123000001_reset_answer_resets_guest.sql` puts the guest back to "no answer yet" (status `pending`, no answered time) when their answer is deleted, so the status and dashboard counts stay right.
+- **"Wear pink!" / "Wear blue!" right away:** picking a guess in the form shows the matching reminder. The status card after answering still shows it.
+- **Gift Guide** section added after the RSVP section, in the couple's words.
+- **Grammar fixes:** "You're invited to the" (was "our"), "Wear pink if you think it's a girl, or blue if you think it's a boy.", "A lot of gift and cash prizes are waiting for you!", "We can't wait to see you, celebrate, and guess with you!".
+
 ## [2026-11-21] Review fixes
 
 - **Edit answer keeps your decisions:** saving an answer without changing attendance or the plus-one count keeps a pending request, a partial approval or a decline. Before, any save (even a message fix) approved the full count.

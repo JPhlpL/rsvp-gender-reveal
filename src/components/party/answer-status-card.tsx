@@ -1,3 +1,4 @@
+import { dressCodeFor } from "@/lib/dress-code";
 import { answerStatus } from "@/lib/invitation-view";
 import type { GuestResponse } from "@/types/response";
 import { COPY_CHANGE_SOMETHING, EVENT_DATE_SHORT } from "@/utils/constants";
@@ -6,14 +7,14 @@ function GuessLine({ guess }: { guess: GuestResponse["guess"] }) {
   if (guess === "girl") {
     return (
       <p className="mt-3 inline-block rounded-full bg-party-pink/60 px-4 py-1.5 font-semibold text-party-pink-ink">
-        Your guess: Girl. Wear pink!
+        Your guess: Girl. {dressCodeFor(guess)}
       </p>
     );
   }
   if (guess === "boy") {
     return (
       <p className="mt-3 inline-block rounded-full bg-party-blue/60 px-4 py-1.5 font-semibold text-party-blue-ink">
-        Your guess: Boy. Wear blue!
+        Your guess: Boy. {dressCodeFor(guess)}
       </p>
     );
   }

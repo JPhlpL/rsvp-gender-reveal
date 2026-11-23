@@ -30,15 +30,18 @@ export const VENUE_MAPS_URL =
   "https://www.google.com/maps/search/?api=1&query=Aquatico+Royalle+Private+Resort+Bucal+Calamba+Laguna";
 export const VENUE_MAP_IFRAME_TITLE = `${VENUE_NAME} — party venue map`;
 
-// --- Guest-facing copy (brief sentences kept verbatim) ---
+// --- Guest-facing copy (the couple's brief, grammar-corrected 2026-11-23) ---
 export const COPY_WEAR_YOUR_GUESS_TITLE = "Wear your guess!";
-export const COPY_WEAR_YOUR_GUESS_BODY = "Wear pink if girl, blue if boy";
+export const COPY_WEAR_YOUR_GUESS_BODY =
+  "Wear pink if you think it's a girl, or blue if you think it's a boy.";
 export const COPY_MINI_QUESTION = "Mini Vera or Mini Philip?";
-export const COPY_PRIZES = "A lot of gift and cash prizes are waiting";
-export const COPY_CLOSING = "We can't wait to see, celebrate, and guess with you";
-export const COPY_PLUS_ONE_NOTE =
-  "Philip & Vera will confirm with you if it's okay to bring them.";
+export const COPY_PRIZES = "A lot of gift and cash prizes are waiting for you!";
+export const COPY_CLOSING = "We can't wait to see you, celebrate, and guess with you!";
 export const COPY_CHANGE_SOMETHING = "Need to change something? Message Philip & Vera.";
+export const COPY_GIFT_GUIDE_TITLE = "Gift Guide";
+/** Verbatim from the couple. */
+export const COPY_GIFT_GUIDE_BODY =
+  "Having you celebrate with us is truly all we could ask for. However, if you’d like to give a gift, gender-neutral clothing, everyday baby essentials, or nursery items would mean the world to us. Thank you so much!";
 
 // --- Assets (drop the couple's baby photos at these paths under /public) ---
 export const PARTY_PHOTO_PATHS = {

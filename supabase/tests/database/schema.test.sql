@@ -2,7 +2,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(16);
+select plan(20);
 
 -- Fixtures (run as the test owner, bypassing RLS)
 insert into guests (id, uuid, name)
@@ -113,7 +113,39 @@ set local role authenticated;
 
 select ok((select count(*) from guests) >= 2, 'admin can read guests');
 
+-- "Reset answer" on the dashboard: an admin deletes the guest's response.
+delete from responses where guest_id = 'aaaaaaaa-0000-4000-8000-000000000001';
+
 reset role;
+
+select is(
+  (select count(*) from responses where guest_id = 'aaaaaaaa-0000-4000-8000-000000000001'),
+  0::bigint,
+  'admin can delete a response (reset answer)'
+);
+select results_eq(
+  $$ select attendance_status::text, submitted_at is null
+     from guests where id = 'aaaaaaaa-0000-4000-8000-000000000001' $$,
+  $$ values ('pending', true) $$,
+  'response delete puts the guest back to no answer'
+);
+
+insert into responses (guest_id, name, is_attending, guess)
+values ('aaaaaaaa-0000-4000-8000-000000000002', 'Test Guest B', true, 'boy');
+delete from responses where guest_id = 'aaaaaaaa-0000-4000-8000-000000000002';
+select results_eq(
+  $$ select attendance_status::text, submitted_at is null
+     from guests where id = 'aaaaaaaa-0000-4000-8000-000000000002' $$,
+  $$ values ('pending', true) $$,
+  'an attending guest goes back to no answer too'
+);
+
+insert into responses (guest_id, name, is_attending, guess)
+values ('aaaaaaaa-0000-4000-8000-000000000002', 'Test Guest B', true, 'boy');
+select lives_ok(
+  $$ delete from guests where id = 'aaaaaaaa-0000-4000-8000-000000000002' $$,
+  'deleting a guest who answered still works'
+);
 
 select * from finish();
 rollback;

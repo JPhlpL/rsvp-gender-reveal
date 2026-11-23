@@ -2,7 +2,7 @@ import { Gift } from "lucide-react";
 import { Star } from "@/components/illustrations";
 import { COPY_PRIZES } from "@/utils/constants";
 
-/** "A lot of gift and cash prizes are waiting" */
+/** Prizes teaser: "A lot of gift and cash prizes are waiting for you!" */
 export function PrizesTeaser() {
   return (
     <section className="px-4 py-8 sm:py-10">

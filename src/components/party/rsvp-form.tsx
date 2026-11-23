@@ -4,8 +4,8 @@ import { startTransition, useActionState, useEffect, useState, type FormEvent } 
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { submitRsvpAction, type RsvpActionState } from "@/actions/rsvp";
+import { dressCodeFor } from "@/lib/dress-code";
 import { parseRsvpFormData, rsvpAnswerSchema } from "@/schemas/rsvp";
-import { COPY_PLUS_ONE_NOTE, PLUS_ONE_MAX } from "@/utils/constants";
 
 interface RsvpFormProps {
   uuid: string;
@@ -15,8 +15,12 @@ interface RsvpFormProps {
 }
 
 type FieldErrors = Partial<Record<string, string>>;
+type Guess = "girl" | "boy";
 
-const COUNT_OPTIONS = Array.from({ length: PLUS_ONE_MAX + 1 }, (_, i) => i);
+const DRESS_CODE_TONE: Record<Guess, string> = {
+  girl: "bg-party-pink/60 text-party-pink-ink",
+  boy: "bg-party-blue/60 text-party-blue-ink",
+};
 
 const labelClass = "block text-sm font-bold text-party-ink";
 const inputClass =
@@ -35,7 +39,7 @@ export function RsvpForm({ uuid, slug, guestName }: RsvpFormProps) {
     {}
   );
   const [attending, setAttending] = useState<"true" | "false" | null>(null);
-  const [plusCount, setPlusCount] = useState(0);
+  const [guess, setGuess] = useState<Guess | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
 
   useEffect(() => {
@@ -128,61 +132,45 @@ export function RsvpForm({ uuid, slug, guestName }: RsvpFormProps) {
       </div>
 
       {isAttending && (
-        <>
-          <fieldset>
-            <legend className={labelClass}>Your guess</legend>
-            <div className="mt-2 grid grid-cols-2 gap-3">
-              <label className={`${choiceClass} border-party-pink has-[:checked]:border-party-pink-deep has-[:checked]:bg-party-pink/40`}>
-                <input type="radio" name="guess" value="girl" disabled={isPending} className="h-4 w-4 accent-party-pink-deep" />
-                Girl (pink)
-              </label>
-              <label className={`${choiceClass} border-party-blue has-[:checked]:border-party-blue-deep has-[:checked]:bg-party-blue/40`}>
-                <input type="radio" name="guess" value="boy" disabled={isPending} className="h-4 w-4 accent-party-blue-deep" />
-                Boy (blue)
-              </label>
-            </div>
-            <FieldError message={errors.guess} />
-          </fieldset>
-
-          <div>
-            <label htmlFor="rsvp-plus-count" className={labelClass}>
-              Bringing anyone?
-            </label>
-            <select
-              id="rsvp-plus-count"
-              name="plus_one_count"
-              value={plusCount}
-              onChange={(e) => setPlusCount(Number(e.target.value))}
-              disabled={isPending}
-              className={`mt-2 ${inputClass}`}
-            >
-              {COUNT_OPTIONS.map((n) => (
-                <option key={n} value={n}>
-                  {n === 0 ? "Just me" : `+${n}`}
-                </option>
-              ))}
-            </select>
-            <FieldError message={errors.plus_one_count} />
-          </div>
-
-          {plusCount > 0 && (
-            <div>
-              <label htmlFor="rsvp-plus-names" className={labelClass}>
-                Their names
-              </label>
+        <fieldset>
+          <legend className={labelClass}>Your guess</legend>
+          <div className="mt-2 grid grid-cols-2 gap-3">
+            <label className={`${choiceClass} border-party-pink has-[:checked]:border-party-pink-deep has-[:checked]:bg-party-pink/40`}>
               <input
-                id="rsvp-plus-names"
-                name="plus_one_names"
-                type="text"
-                placeholder="e.g. Ben Cruz, Cy Santos"
+                type="radio"
+                name="guess"
+                value="girl"
+                checked={guess === "girl"}
+                onChange={() => setGuess("girl")}
                 disabled={isPending}
-                className={`mt-2 ${inputClass}`}
+                className="h-4 w-4 accent-party-pink-deep"
               />
-              <p className="mt-1 text-sm text-party-ink-soft">{COPY_PLUS_ONE_NOTE}</p>
-              <FieldError message={errors.plus_one_names} />
-            </div>
-          )}
-        </>
+              Girl (pink)
+            </label>
+            <label className={`${choiceClass} border-party-blue has-[:checked]:border-party-blue-deep has-[:checked]:bg-party-blue/40`}>
+              <input
+                type="radio"
+                name="guess"
+                value="boy"
+                checked={guess === "boy"}
+                onChange={() => setGuess("boy")}
+                disabled={isPending}
+                className="h-4 w-4 accent-party-blue-deep"
+              />
+              Boy (blue)
+            </label>
+          </div>
+          <div aria-live="polite" className="text-center">
+            {guess && (
+              <p
+                className={`mt-3 inline-block rounded-full px-4 py-1.5 font-semibold ${DRESS_CODE_TONE[guess]}`}
+              >
+                {dressCodeFor(guess)}
+              </p>
+            )}
+          </div>
+          <FieldError message={errors.guess} />
+        </fieldset>
       )}
 
       <div>

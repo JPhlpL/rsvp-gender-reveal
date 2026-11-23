@@ -61,6 +61,23 @@ export async function saveAdminAnswerAction(
   }
 }
 
+/**
+ * Clear a guest's answer so they can answer again from their link. The link only shows
+ * the form while RSVPs are open (before the deadline and not closed).
+ */
+export async function resetAnswerAction(guestId: string): Promise<ResponseActionState> {
+  await requireAdmin();
+
+  try {
+    await responseRepository.deleteResponse(guestId);
+    revalidateDashboard();
+    return { success: true };
+  } catch (error) {
+    console.error("Error resetting answer:", error);
+    return { error: "Couldn't reset the answer. Please try again." };
+  }
+}
+
 /** Approve (possibly fewer) or decline a guest's plus-one request. */
 export async function decidePlusOneAction(
   guestId: string,

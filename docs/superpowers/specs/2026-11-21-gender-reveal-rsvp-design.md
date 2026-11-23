@@ -1,7 +1,7 @@
 # Gender Reveal & Baby Shower RSVP: Design
 
 - **Date:** 2026-11-21
-- **Status:** Approved 2026-11-21; implemented on branch `feat/initial-build`.
+- **Status:** Approved 2026-11-21; implemented on branch `feat/initial-build`. Amended 2026-11-23 after launch (see §11).
 - **Base code:** `d:\Developments\Projects\nextjs\rsvp-wedding` (the couple's wedding RSVP site)
 - **New repo (to be created):** `d:\Developments\Projects\nextjs\rsvp-gender-reveal`. This file moves to `docs/superpowers/specs/` there.
 
@@ -147,21 +147,22 @@ A wrong or outdated name in the slug redirects to the canonical slug, as in the 
 ### 7.3 Guest page, top to bottom
 
 1. **Envelope intro.** A pink-and-blue envelope with a cartoon seal (a "?" or a baby bottle). The guest taps to open, and "opened" is remembered in sessionStorage, as in the wedding.
-2. **Header.** A cluster of cartoon illustrations (crib, baby bottle, onesie, balloons), then "Gender Reveal & Baby Shower", "of Philip & Vera", and "Saturday, December 5, 2026 · 5:00 PM".
+2. **Header.** A cluster of cartoon illustrations (crib, baby bottle, onesie, balloons), then "You're invited to the", "Gender Reveal & Baby Shower", "of Philip & Vera", and "Saturday, December 5, 2026 · 5:00 PM".
 3. **"Mini Vera or Mini Philip?"**
    - Two slightly tilted photo-print frames, each with a cartoon clothespin.
    - **Left, pink frame:** Vera's baby photo. **Right, blue frame:** Philip's baby photo. An "or" badge sits between them.
    - Both stay side by side on phones.
    - If a file is missing, its frame shows a cartoon baby outline in the frame's color.
    - Files: `public/party/mini-vera.jpg` and `public/party/mini-philip.jpg`. Adding them must need no code change.
-4. **"Wear your guess!"** Pink if girl, blue if boy, with two equal swatches.
+4. **"Wear your guess!"** "Wear pink if you think it's a girl, or blue if you think it's a boy.", with two equal swatches.
 5. **Where.** Aquatico Royalle Private Resort: map embed, address with a copy button, and "Open in Google Maps".
-6. **Prizes teaser.** "A lot of gift and cash prizes are waiting."
+6. **Prizes teaser.** "A lot of gift and cash prizes are waiting for you!"
 7. **RSVP section.**
    - "Please RSVP by December 1", read from the database and shown in Manila time.
    - The admin note callout, if the guest has notes.
    - Then the form, the status view (§7.5) or the closed view (§7.6).
-8. **Closing.** "We can't wait to see, celebrate, and guess with you," then the footer.
+8. **Gift Guide** (added 2026-11-23). The couple's text, word for word, in a card with a pink and a blue onesie.
+9. **Closing.** "We can't wait to see you, celebrate, and guess with you!", then the footer.
 
 The event details (when, where, map) are visible in every state: open, answered and closed.
 
@@ -171,10 +172,10 @@ The event details (when, where, map) are visible in every state: open, answered 
 |---|---|
 | Attending | Required, yes or no |
 | Name | Required, 1–255 characters |
-| Guess | `girl` or `boy`. Required if attending; hidden and not stored if not. |
-| Bringing anyone? | A count from 0 to 5. Hidden if not attending. |
-| Their names | Required if count > 0, up to 500 characters, one text box |
+| Guess | `girl` or `boy`. Required if attending; hidden and not stored if not. Picking one shows "Wear pink!" or "Wear blue!" right away. |
 | Message | Optional, up to 1000 characters |
+
+The "Bringing anyone?" question was removed on 2026-11-23. The server ignores any plus-ones a guest's form sends, so a guest answer is always stored with `plus_one_count` 0. Plus-ones can still be recorded by the couple from the dashboard (§7.14).
 
 - One zod schema validates both the client and the server.
 - **On submit, the server re-checks** that the guest exists, hasn't answered yet, and that RSVPs are open (§7.6).
@@ -187,9 +188,7 @@ Dear Maria,
 Will you be there?   ( ) Yes, I'll be there!  ( ) Sorry, I can't make it
 Your name            [____________________]
 Your guess           ( ) Girl (pink)   ( ) Boy (blue)
-Bringing anyone?     [ 0 ▾ ]
-  Their names        [____________________]
-  Philip & Vera will confirm with you if it's okay to bring them.
+                     (Wear pink!)          <- appears once a guess is picked
 Message (optional)   [____________________]
                      [ Send RSVP ]
 ```
@@ -420,3 +419,13 @@ No send date is fixed yet, so build in this order. Whenever the couple decide to
 - Music player only if a song is supplied.
 - Build order (§7.15).
 - The admin "Edit answer" form and its rules (§7.14). Recommended in conversation; the couple didn't answer, so it's included as Claude's call.
+
+## 11. Changes after launch (2026-11-23)
+
+Requested by the couple after the site went live:
+
+1. **No plus-one question on the invitation.** Guests no longer see "Bringing anyone?". The server forces `plus_one_count` 0 for guest answers, including from a page opened before the change. The dashboard's plus-one tools stay, for companions the couple record themselves.
+2. **Reset answer (dashboard).** A new action on each guest row and card deletes the guest's answer, so their link shows the RSVP form again. It needs a confirmation, and the guest can only answer again while RSVPs are open. It's disabled for guests who haven't answered. A database trigger (`responses_reset_guest`, migration `20261123000001`) sets the guest's `attendance_status` back to `pending` and `submitted_at` to null when a response is deleted.
+3. **Live dress-code reminder.** Picking a guess in the form shows "Wear pink!" or "Wear blue!" at once. The status card after answering keeps "Your guess: Girl. Wear pink!" / "Your guess: Boy. Wear blue!".
+4. **Gift Guide section** after the RSVP section (§7.3).
+5. **Grammar fixes** to guest-facing text: "You're invited to the" (was "our", which clashed with "of Philip & Vera"); the "Wear your guess!" line; "…waiting for you!" on the prizes teaser; "We can't wait to see you, celebrate, and guess with you!".

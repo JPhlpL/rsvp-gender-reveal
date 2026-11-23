@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { GiftGuide } from "@/components/party/gift-guide";
 import { MiniFrames } from "@/components/party/mini-frames";
 import { PartyClosing } from "@/components/party/party-closing";
 import { PartyDivider } from "@/components/party/party-divider";
@@ -56,6 +57,8 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
         <PrizesTeaser />
         <PartyDivider />
         <RsvpSection guest={guest} settings={settings} view={view} slug={canonicalSlug} />
+        <PartyDivider />
+        <GiftGuide />
         <PartyDivider />
         <PartyClosing />
         <PartyFooter />

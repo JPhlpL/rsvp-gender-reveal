@@ -11,7 +11,7 @@ export function PartyHeader() {
       <Balloons className="mx-auto mb-2 h-20 w-16 sm:h-24 sm:w-20" />
 
       <p className="text-xs uppercase tracking-[0.3em] text-party-ink-soft sm:text-sm">
-        You&apos;re invited to our
+        You&apos;re invited to the
       </p>
       <h1 className="mt-3 font-display text-4xl font-semibold leading-tight text-party-ink sm:text-6xl">
         Gender Reveal

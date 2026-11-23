@@ -25,7 +25,12 @@ export async function submitRsvpAction(
   _prevState: RsvpActionState,
   formData: FormData
 ): Promise<RsvpActionState> {
-  const parsed = rsvpAnswerSchema.safeParse(parseRsvpFormData(formData));
+  // The invitation doesn't ask about companions; ignore any an older open page still sends.
+  const parsed = rsvpAnswerSchema.safeParse({
+    ...parseRsvpFormData(formData),
+    plus_one_count: 0,
+    plus_one_names: null,
+  });
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }

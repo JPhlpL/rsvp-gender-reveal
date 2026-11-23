@@ -2,7 +2,7 @@
 
 Invitation and RSVP site for Philip & Vera's Gender Reveal & Baby Shower — Saturday, December 5, 2026, 5:00 PM at Aquatico Royalle Private Resort.
 
-Each guest gets a personal link (`/rsvp/<name>-<code>`) to a pink-and-blue invitation where they RSVP, share their guess, and request plus-ones. The couple manage guests, approve plus-ones, and set the RSVP deadline from an admin dashboard.
+Each guest gets a personal link (`/rsvp/<name>-<code>`) to a pink-and-blue invitation where they RSVP and share their guess. The couple manage guests, record or reset answers, and set the RSVP deadline from an admin dashboard.
 
 Built with Next.js 16 (App Router), Supabase (Postgres + Auth), Tailwind CSS 4 and shadcn/ui. Design: [`docs/superpowers/specs/`](docs/superpowers/specs/). Plan: [`docs/superpowers/plans/`](docs/superpowers/plans/).
 

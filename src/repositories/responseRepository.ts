@@ -45,6 +45,18 @@ export const responseRepository = {
     return data;
   },
 
+  /** Removes a guest's answer, so their invitation link shows the RSVP form again. */
+  async deleteResponse(guestId: string): Promise<void> {
+    const supabase = await createClient();
+
+    const { error } = await supabase.from("responses").delete().eq("guest_id", guestId);
+
+    if (error) {
+      console.error("Error resetting answer:", error);
+      throw new Error("Failed to reset answer");
+    }
+  },
+
   async updatePlusOneDecision(
     guestId: string,
     fields: Pick<GuestResponseUpdate, "plus_one_status" | "plus_one_approved_count">
