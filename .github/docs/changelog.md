@@ -8,7 +8,7 @@
   - Personal links keep working in both modes.
 - **No limits on accepting guests:** no guest cap and no duplicate-name check. The RSVP deadline and "Close RSVPs now" still apply to both kinds of link.
 - **Invisible bot trap** on the general form: a hidden field people never see; if it's filled in, nothing is stored.
-- Settings card: a "Copy general link" button and a badge showing the current mode. Guest table and cards: a "via general link" label. Excel export: a new "Added via" column.
+- Settings card: an on/off **switch** (not a checkbox) with notes that follow it as it's flipped, explaining what `/invitation` does in that mode ("Showcase link" vs "General RSVP link"), a copy button labelled to match ("Copy showcase link" / "Copy general link"), a "Not saved yet" reminder until Save is pressed, and a badge showing the saved mode. Guest table and cards: a "via general link" label. Excel export: a new "Added via" column.
 - Migration `20261123000002_personalized_links_switch.sql`: `settings.personalized_links` (default true), enum `guest_source`, column `guests.added_via` (default `admin`). Database types regenerated.
 
 ## [2026-11-23] Showcase invitation
