@@ -13,6 +13,7 @@ describe("settings form", () => {
     expect(toSettingsUpdate(parsed)).toEqual({
       rsvp_deadline: "2026-12-01T23:59:59+08:00",
       rsvp_closed: false,
+      personalized_links: false,
     });
   });
 
@@ -26,6 +27,20 @@ describe("settings form", () => {
       parseSettingsFormData(form({ deadline_date: "2026-12-01", rsvp_closed: "on" }))
     );
     expect(parsed.rsvp_closed).toBe(true);
+  });
+
+  it("reads the checked personalized-links switch as on", () => {
+    const parsed = settingsFormSchema.parse(
+      parseSettingsFormData(form({ deadline_date: "2026-12-01", personalized_links: "on" }))
+    );
+    expect(toSettingsUpdate(parsed).personalized_links).toBe(true);
+  });
+
+  it("reads an unchecked personalized-links switch as off (general link)", () => {
+    const parsed = settingsFormSchema.parse(
+      parseSettingsFormData(form({ deadline_date: "2026-12-01" }))
+    );
+    expect(toSettingsUpdate(parsed).personalized_links).toBe(false);
   });
 
   it("rejects impossible dates", () => {

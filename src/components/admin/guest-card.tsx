@@ -7,6 +7,7 @@ import { CopyLinkModal } from "./copy-link-modal";
 import { ViewResponseModal } from "./view-response-modal";
 import { EditAnswerModal } from "./edit-answer-modal";
 import { ResetAnswerDialog } from "./reset-answer-dialog";
+import { GeneralLinkBadge } from "./general-link-badge";
 import type { GuestWithResponse } from "@/types/guest";
 import { guessLabel, plusOneSummary } from "@/lib/guest-labels";
 
@@ -44,6 +45,7 @@ export function GuestCard({ guest }: GuestCardProps) {
       <h3 className="font-semibold text-sm mb-1">{guest.name}</h3>
       <div className="flex items-center gap-1.5">
         {getStatusBadge(guest.attendance_status)}
+        {guest.added_via === "general_link" && <GeneralLinkBadge />}
       </div>
     </>
   );

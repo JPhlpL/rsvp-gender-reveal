@@ -1,6 +1,6 @@
 import { rsvpClosedReason, type RsvpClosedReason } from "@/lib/rsvp-window";
 import type { GuestResponse } from "@/types/response";
-import type { RsvpSettings } from "@/types/settings";
+import type { PublicSettings, RsvpSettings } from "@/types/settings";
 
 /** What the RSVP part of a guest's invitation shows. */
 export type InvitationView =
@@ -15,6 +15,25 @@ export function resolveInvitationView(
   now: Date
 ): InvitationView {
   if (response) return { kind: "answered", response };
+
+  const reason = rsvpClosedReason(settings, now);
+  if (reason) return { kind: "closed", reason };
+
+  return { kind: "form" };
+}
+
+/** What the RSVP part of the public /invitation page shows. */
+export type ShowcaseView =
+  | { kind: "showcase" }
+  | { kind: "form" }
+  | { kind: "closed"; reason: RsvpClosedReason };
+
+/**
+ * Personalized links on: a showcase that points to personal links. Off: the general
+ * RSVP form for anyone, within the same deadline and close switch as personal links.
+ */
+export function resolveShowcaseView(settings: PublicSettings, now: Date): ShowcaseView {
+  if (settings.personalized_links) return { kind: "showcase" };
 
   const reason = rsvpClosedReason(settings, now);
   if (reason) return { kind: "closed", reason };

@@ -31,6 +31,7 @@ export function makeGuestRow(
     phone: null,
     notes: null,
     attendance_status: "pending",
+    added_via: "admin",
     submitted_at: null,
     created_at: "2026-11-21T00:00:00Z",
     updated_at: "2026-11-21T00:00:00Z",

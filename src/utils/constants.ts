@@ -56,6 +56,10 @@ export const UUID_V4_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // --- RSVP ---
+/** Hidden field on the general /invitation form. People never see it; bots fill it in. */
+export const RSVP_BOT_TRAP_FIELD = "x_form_check";
+export const MSG_RSVP_CLOSED = "RSVPs are closed. Message Philip & Vera if you'd still like to come.";
+export const MSG_SOMETHING_WRONG = "Something went wrong. Please try again.";
 /** Most companions a guest may ask to bring (matches the DB check). */
 export const PLUS_ONE_MAX = 5;
 

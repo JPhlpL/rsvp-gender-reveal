@@ -1,10 +1,11 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Balloons } from "@/components/illustrations";
 import { AnswerStatusCard } from "@/components/party/answer-status-card";
 import { PartyClosing } from "@/components/party/party-closing";
 import { PartyFooter } from "@/components/party/party-footer";
 import { parseGuestUuidFromRsvpParam, rsvpPathSegment } from "@/lib/rsvp-path";
-import { getInvitationByUuid } from "@/repositories/invitationRepository";
+import { getInvitationByUuid, getRsvpSettings } from "@/repositories/invitationRepository";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +19,13 @@ export default async function ThankYouPage({ params }: ThankYouPageProps) {
   const uuid = parseGuestUuidFromRsvpParam(guestSlug);
   if (!uuid) redirect("/rsvp/error");
 
-  const invitation = await getInvitationByUuid(uuid);
+  const [invitation, settings] = await Promise.all([getInvitationByUuid(uuid), getRsvpSettings()]);
   if (!invitation) redirect("/rsvp/error");
 
   const { guest, response } = invitation;
   if (!response) redirect(`/rsvp/${rsvpPathSegment(guest.name, guest.uuid)}`);
+
+  const canAnswerAgain = guest.added_via === "general_link" && !settings.personalized_links;
 
   return (
     <main className="flex min-h-screen flex-col">
@@ -33,6 +36,14 @@ export default async function ThankYouPage({ params }: ThankYouPageProps) {
       </section>
       <div className="mx-auto w-full max-w-xl px-4">
         <AnswerStatusCard response={response} />
+        {canAnswerAgain && (
+          <p className="mt-4 text-center text-base text-party-ink-soft">
+            Answering for someone else?{" "}
+            <Link href="/invitation" className="font-semibold text-party-ink underline underline-offset-4">
+              Fill in the form again
+            </Link>
+          </p>
+        )}
       </div>
       <PartyClosing />
       <PartyFooter />

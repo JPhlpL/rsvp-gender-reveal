@@ -7,14 +7,22 @@ import { PartyHeader } from "@/components/party/party-header";
 import { PartyIntro } from "@/components/party/party-intro";
 import { PartyVenue } from "@/components/party/party-venue";
 import { PrizesTeaser } from "@/components/party/prizes-teaser";
-import { RsvpShowcaseNote } from "@/components/party/rsvp-showcase-note";
+import { ShowcaseRsvpSection } from "@/components/party/showcase-rsvp-section";
 import { WearYourGuess } from "@/components/party/wear-your-guess";
+import { resolveShowcaseView } from "@/lib/invitation-view";
+import { getRsvpSettings } from "@/repositories/invitationRepository";
+
+// Reads the personalized-links switch on every request.
+export const dynamic = "force-dynamic";
 
 /**
- * Public showcase of the invitation: the same page guests get, with a note in place of
- * the RSVP form. Reads and writes no guest data.
+ * The public invitation. Personalized links on: a showcase with a note in place of the
+ * RSVP form. Off: the general RSVP form anyone can answer (design §12).
  */
-export default function ShowcaseInvitationPage() {
+export default async function PublicInvitationPage() {
+  const settings = await getRsvpSettings();
+  const view = resolveShowcaseView(settings, new Date());
+
   return (
     <main className="relative min-h-screen overflow-x-hidden">
       <PartyIntro>
@@ -27,7 +35,7 @@ export default function ShowcaseInvitationPage() {
         <PartyVenue />
         <PrizesTeaser />
         <PartyDivider />
-        <RsvpShowcaseNote />
+        <ShowcaseRsvpSection view={view} settings={settings} />
         <PartyDivider />
         <GiftGuide />
         <PartyDivider />

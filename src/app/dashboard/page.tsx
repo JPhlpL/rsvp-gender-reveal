@@ -5,6 +5,7 @@ import { DashboardStats } from "@/components/admin/dashboard-stats";
 import { PlusOneRequestsCard } from "@/components/admin/plus-one-requests-card";
 import { SettingsCard } from "@/components/admin/settings-card";
 import { describeRsvpStatus, isRsvpOpen, manilaDateFromDeadline } from "@/lib/rsvp-window";
+import { DEFAULT_PUBLIC_APP_URL } from "@/utils/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,8 @@ export default async function DashboardPage() {
         rsvpClosed={settings.rsvp_closed}
         statusLine={describeRsvpStatus(settings, now)}
         isOpen={isRsvpOpen(settings, now)}
+        personalizedLinks={settings.personalized_links}
+        generalLinkUrl={`${process.env.NEXT_PUBLIC_APP_URL || DEFAULT_PUBLIC_APP_URL}/invitation`}
       />
       <PlusOneRequestsCard rows={guests} />
       <DashboardStats rows={guests} />

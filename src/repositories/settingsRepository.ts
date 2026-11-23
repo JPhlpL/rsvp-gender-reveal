@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import type { SettingsUpdate } from "@/schemas/settings";
 import type { Settings } from "@/types/settings";
 
 /** Admin-side access to the single `settings` row (session client; RLS: authenticated only). */
@@ -16,10 +17,7 @@ export const settingsRepository = {
     return data;
   },
 
-  async updateRsvpSettings(fields: {
-    rsvp_deadline: string | null;
-    rsvp_closed: boolean;
-  }): Promise<Settings> {
+  async updateRsvpSettings(fields: SettingsUpdate): Promise<Settings> {
     const supabase = await createClient();
 
     const { data, error } = await supabase

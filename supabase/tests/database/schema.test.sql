@@ -2,7 +2,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(20);
+select plan(24);
 
 -- Fixtures (run as the test owner, bypassing RLS)
 insert into guests (id, uuid, name)
@@ -146,6 +146,35 @@ select lives_ok(
   $$ delete from guests where id = 'aaaaaaaa-0000-4000-8000-000000000002' $$,
   'deleting a guest who answered still works'
 );
+
+-- Personalized links switch (§12): on by default; guests the admin adds are labelled 'admin'.
+select is(
+  (select personalized_links from settings where id = 1),
+  true,
+  'personalized links are on by default'
+);
+insert into guests (id, uuid, name)
+values ('aaaaaaaa-0000-4000-8000-000000000003', 'bbbbbbbb-0000-4000-8000-000000000003', 'Test Guest C');
+select is(
+  (select added_via::text from guests where id = 'aaaaaaaa-0000-4000-8000-000000000003'),
+  'admin',
+  'a guest added the usual way is labelled admin'
+);
+insert into guests (id, uuid, name, added_via)
+values ('aaaaaaaa-0000-4000-8000-000000000004', 'bbbbbbbb-0000-4000-8000-000000000004', 'Walk-in', 'general_link');
+select is(
+  (select added_via::text from guests where id = 'aaaaaaaa-0000-4000-8000-000000000004'),
+  'general_link',
+  'a guest from the general link keeps that label'
+);
+set local role anon;
+select throws_ok(
+  $$ insert into guests (name, added_via) values ('Bot', 'general_link') $$,
+  '42501',
+  null,
+  'anon still cannot add guests directly'
+);
+reset role;
 
 select * from finish();
 rollback;

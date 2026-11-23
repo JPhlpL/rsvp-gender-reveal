@@ -1,5 +1,16 @@
 # Changelog
 
+## [2026-11-23] Personalized links switch
+
+- **New "Personalized links" switch** in the dashboard's RSVP Settings card (on by default, so nothing changes until it's flipped).
+  - **On:** as before. Guests are added first and answer from their personal link; `/invitation` is a showcase without a form.
+  - **Off:** `/invitation` shows the RSVP form and anyone can answer, like a Google Form. Each answer adds the person to the guest list with a "via general link" label, and they land on the normal thank-you page, which offers "Fill in the form again" so one phone can answer for several people.
+  - Personal links keep working in both modes.
+- **No limits on accepting guests:** no guest cap and no duplicate-name check. The RSVP deadline and "Close RSVPs now" still apply to both kinds of link.
+- **Invisible bot trap** on the general form: a hidden field people never see; if it's filled in, nothing is stored.
+- Settings card: a "Copy general link" button and a badge showing the current mode. Guest table and cards: a "via general link" label. Excel export: a new "Added via" column.
+- Migration `20261123000002_personalized_links_switch.sql`: `settings.personalized_links` (default true), enum `guest_source`, column `guests.added_via` (default `admin`). Database types regenerated.
+
 ## [2026-11-23] Showcase invitation
 
 - **Envelope on every visit, everywhere:** guest links no longer remember that the envelope was opened, so it shows each time a link is opened, like the showcase page. The session-storage flag (`src/lib/session-flag.ts`) was removed.

@@ -10,12 +10,16 @@ function isRealDate(value: string): boolean {
   }
 }
 
-/** The admin Settings card: a Manila date (or empty for no deadline) and the manual close switch. */
+/**
+ * The admin Settings card: a Manila date (or empty for no deadline), the manual close
+ * switch, and the personalized-links switch (off = anyone can RSVP at /invitation).
+ */
 export const settingsFormSchema = z.object({
   deadline_date: z
     .string()
     .refine((value) => value === "" || isRealDate(value), "Pick a valid date"),
   rsvp_closed: z.boolean(),
+  personalized_links: z.boolean(),
 });
 
 export type SettingsFormData = z.infer<typeof settingsFormSchema>;
@@ -25,15 +29,20 @@ export function parseSettingsFormData(fd: FormData): Record<string, unknown> {
   return {
     deadline_date: typeof date === "string" ? date.trim() : "",
     rsvp_closed: fd.get("rsvp_closed") === "on",
+    personalized_links: fd.get("personalized_links") === "on",
   };
 }
 
-export function toSettingsUpdate(data: SettingsFormData): {
+export type SettingsUpdate = {
   rsvp_deadline: string | null;
   rsvp_closed: boolean;
-} {
+  personalized_links: boolean;
+};
+
+export function toSettingsUpdate(data: SettingsFormData): SettingsUpdate {
   return {
     rsvp_deadline: data.deadline_date ? deadlineFromManilaDate(data.deadline_date) : null,
     rsvp_closed: data.rsvp_closed,
+    personalized_links: data.personalized_links,
   };
 }

@@ -19,6 +19,7 @@ import { CopyLinkModal } from "./copy-link-modal";
 import { ViewResponseModal } from "./view-response-modal";
 import { EditAnswerModal } from "./edit-answer-modal";
 import { ResetAnswerDialog } from "./reset-answer-dialog";
+import { GeneralLinkBadge } from "./general-link-badge";
 import type { AttendanceStatus, GuestWithResponse } from "@/types/guest";
 import { ADMIN_GUEST_TABLE_PAGE_SIZE } from "@/utils/constants";
 import { guessLabel, plusOneSummary } from "@/lib/guest-labels";
@@ -55,7 +56,10 @@ export function GuestTable({ guests }: GuestTableProps) {
           );
         },
         cell: ({ row }) => (
-          <div className="font-medium text-center">{row.getValue("name")}</div>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <span className="font-medium">{row.getValue("name")}</span>
+            {row.original.added_via === "general_link" && <GeneralLinkBadge />}
+          </div>
         ),
       },
       {

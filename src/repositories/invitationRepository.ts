@@ -3,9 +3,10 @@ import "server-only";
 import { createServiceClient } from "@/utils/supabase/service";
 import type { Guest } from "@/types/guest";
 import type { GuestResponse, GuestResponseInsert } from "@/types/response";
-import type { RsvpSettings } from "@/types/settings";
+import type { PublicSettings } from "@/types/settings";
 
-export type InvitationGuest = Pick<Guest, "id" | "uuid" | "name" | "notes">;
+export type InvitationGuest = Pick<Guest, "id" | "uuid" | "name" | "notes" | "added_via">;
+export type NewGuest = Pick<Guest, "id" | "uuid" | "name">;
 
 export type Invitation = {
   guest: InvitationGuest;
@@ -21,7 +22,7 @@ export async function getInvitationByUuid(uuid: string): Promise<Invitation | nu
 
   const { data: guest, error } = await supabase
     .from("guests")
-    .select("id, uuid, name, notes")
+    .select("id, uuid, name, notes, added_via")
     .eq("uuid", uuid)
     .maybeSingle();
 
@@ -45,12 +46,12 @@ export async function getInvitationByUuid(uuid: string): Promise<Invitation | nu
   return { guest, response };
 }
 
-export async function getRsvpSettings(): Promise<RsvpSettings> {
+export async function getRsvpSettings(): Promise<PublicSettings> {
   const supabase = createServiceClient();
 
   const { data, error } = await supabase
     .from("settings")
-    .select("rsvp_deadline, rsvp_closed")
+    .select("rsvp_deadline, rsvp_closed, personalized_links")
     .eq("id", 1)
     .single();
 
@@ -75,4 +76,34 @@ export async function insertGuestResponse(
 
   console.error("Error saving response:", error);
   throw new Error("Failed to save response");
+}
+
+/**
+ * Adds someone who answered on the general /invitation link to the guest list.
+ * Only called while personalized links are off (the action checks).
+ */
+export async function insertGeneralGuest(name: string): Promise<NewGuest> {
+  const supabase = createServiceClient();
+
+  const { data, error } = await supabase
+    .from("guests")
+    .insert({ name, added_via: "general_link" })
+    .select("id, uuid, name")
+    .single();
+
+  if (error) {
+    console.error("Error adding general-link guest:", error);
+    throw new Error("Failed to add guest");
+  }
+
+  return data;
+}
+
+/** Undoes `insertGeneralGuest` when the answer itself couldn't be saved. */
+export async function removeGuest(id: string): Promise<void> {
+  const supabase = createServiceClient();
+
+  const { error } = await supabase.from("guests").delete().eq("id", id);
+
+  if (error) console.error("Error removing guest after a failed answer:", error);
 }

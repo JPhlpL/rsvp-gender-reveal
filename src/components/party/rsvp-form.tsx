@@ -3,16 +3,25 @@
 import { startTransition, useActionState, useEffect, useState, type FormEvent } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { submitGeneralRsvpAction } from "@/actions/general-rsvp";
 import { submitRsvpAction, type RsvpActionState } from "@/actions/rsvp";
 import { dressCodeFor } from "@/lib/dress-code";
 import { parseRsvpFormData, rsvpAnswerSchema } from "@/schemas/rsvp";
+import { RSVP_BOT_TRAP_FIELD } from "@/utils/constants";
 
-interface RsvpFormProps {
-  uuid: string;
-  /** Canonical `<slug>-<uuid>` segment, for the thank-you redirect. */
-  slug: string;
-  guestName: string;
-}
+type RsvpFormProps =
+  | {
+      /** A guest's personal link. */
+      mode: "guest";
+      uuid: string;
+      /** Canonical `<slug>-<uuid>` segment, for the thank-you redirect. */
+      slug: string;
+      guestName: string;
+    }
+  | {
+      /** The general /invitation link: anyone can answer (personalized links off). */
+      mode: "general";
+    };
 
 type FieldErrors = Partial<Record<string, string>>;
 type Guess = "girl" | "boy";
@@ -33,22 +42,25 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1 text-sm font-semibold text-red-700">{message}</p>;
 }
 
-export function RsvpForm({ uuid, slug, guestName }: RsvpFormProps) {
+export function RsvpForm(props: RsvpFormProps) {
+  const isGeneral = props.mode === "general";
+  const guestName = props.mode === "guest" ? props.guestName : "";
   const [state, formAction, isPending] = useActionState<RsvpActionState, FormData>(
-    submitRsvpAction.bind(null, uuid),
+    props.mode === "guest" ? submitRsvpAction.bind(null, props.uuid) : submitGeneralRsvpAction,
     {}
   );
+  const thankYouSlug = props.mode === "guest" ? props.slug : state.slug;
   const [attending, setAttending] = useState<"true" | "false" | null>(null);
   const [guess, setGuess] = useState<Guess | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
 
   useEffect(() => {
-    if (state.success) {
-      window.location.assign(`/rsvp/${slug}/thank-you`);
+    if (state.success && thankYouSlug) {
+      window.location.assign(`/rsvp/${thankYouSlug}/thank-you`);
     } else if (state.error) {
       toast.error(state.error);
     }
-  }, [state, slug]);
+  }, [state, thankYouSlug]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -78,11 +90,21 @@ export function RsvpForm({ uuid, slug, guestName }: RsvpFormProps) {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="space-y-6 rounded-3xl border border-party-ink/10 bg-party-white/90 p-5 shadow-sm sm:p-8"
+      className="relative space-y-6 rounded-3xl border border-party-ink/10 bg-party-white/90 p-5 shadow-sm sm:p-8"
     >
       <p className="text-center font-display text-xl font-semibold text-party-ink">
-        Dear {guestName},
+        Dear {isGeneral ? "guest" : guestName},
       </p>
+
+      {isGeneral && (
+        // Bot trap: hidden from people and screen readers; bots fill in every field.
+        <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+          <label>
+            Leave this empty
+            <input type="text" name={RSVP_BOT_TRAP_FIELD} tabIndex={-1} autoComplete="off" />
+          </label>
+        </div>
+      )}
 
       <fieldset>
         <legend className={labelClass}>Will you be there?</legend>
@@ -125,6 +147,7 @@ export function RsvpForm({ uuid, slug, guestName }: RsvpFormProps) {
           type="text"
           autoComplete="name"
           defaultValue={guestName}
+          placeholder={isGeneral ? "Your full name" : undefined}
           disabled={isPending}
           className={`mt-2 ${inputClass}`}
         />

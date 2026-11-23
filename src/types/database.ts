@@ -36,6 +36,7 @@ export type Database = {
     Tables: {
       guests: {
         Row: {
+          added_via: Database["public"]["Enums"]["guest_source"]
           attendance_status: Database["public"]["Enums"]["attendance_status"]
           created_at: string
           email: string | null
@@ -48,6 +49,7 @@ export type Database = {
           uuid: string
         }
         Insert: {
+          added_via?: Database["public"]["Enums"]["guest_source"]
           attendance_status?: Database["public"]["Enums"]["attendance_status"]
           created_at?: string
           email?: string | null
@@ -60,6 +62,7 @@ export type Database = {
           uuid?: string
         }
         Update: {
+          added_via?: Database["public"]["Enums"]["guest_source"]
           attendance_status?: Database["public"]["Enums"]["attendance_status"]
           created_at?: string
           email?: string | null
@@ -126,18 +129,21 @@ export type Database = {
       settings: {
         Row: {
           id: number
+          personalized_links: boolean
           rsvp_closed: boolean
           rsvp_deadline: string | null
           updated_at: string
         }
         Insert: {
           id?: number
+          personalized_links?: boolean
           rsvp_closed?: boolean
           rsvp_deadline?: string | null
           updated_at?: string
         }
         Update: {
           id?: number
+          personalized_links?: boolean
           rsvp_closed?: boolean
           rsvp_deadline?: string | null
           updated_at?: string
@@ -149,10 +155,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       attendance_status: "pending" | "attending" | "not_attending"
+      guest_source: "admin" | "general_link"
       plus_one_status: "none" | "pending" | "approved" | "declined"
       rsvp_guess: "girl" | "boy"
     }
@@ -286,6 +293,7 @@ export const Constants = {
   public: {
     Enums: {
       attendance_status: ["pending", "attending", "not_attending"],
+      guest_source: ["admin", "general_link"],
       plus_one_status: ["none", "pending", "approved", "declined"],
       rsvp_guess: ["girl", "boy"],
     },

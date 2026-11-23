@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { answerStatus, resolveInvitationView } from "./invitation-view";
+import {
+  answerStatus,
+  resolveInvitationView,
+  resolveShowcaseView,
+} from "./invitation-view";
 import { makeResponse } from "@/test/factories";
 
 const open = { rsvp_deadline: "2026-12-01T23:59:59+08:00", rsvp_closed: false };
@@ -24,6 +28,33 @@ describe("resolveInvitationView", () => {
       kind: "closed",
       reason: "deadline",
     });
+  });
+});
+
+describe("resolveShowcaseView", () => {
+  it("is only a showcase while personalized links are on", () => {
+    expect(resolveShowcaseView({ ...open, personalized_links: true }, before)).toEqual({
+      kind: "showcase",
+    });
+  });
+
+  it("takes answers from anyone while personalized links are off", () => {
+    expect(resolveShowcaseView({ ...open, personalized_links: false }, before)).toEqual({
+      kind: "form",
+    });
+  });
+
+  it("still respects the deadline for the general link", () => {
+    expect(resolveShowcaseView({ ...open, personalized_links: false }, after)).toEqual({
+      kind: "closed",
+      reason: "deadline",
+    });
+  });
+
+  it("still respects the close switch for the general link", () => {
+    expect(
+      resolveShowcaseView({ ...open, rsvp_closed: true, personalized_links: false }, before)
+    ).toEqual({ kind: "closed", reason: "manual" });
   });
 });
 

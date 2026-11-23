@@ -35,6 +35,7 @@ describe("toExportRows", () => {
       Message: "So excited!",
       "Admin notes": "Pool towel",
       "Answered at": "Nov 25, 2026, 12:30 PM",
+      "Added via": "Personal link",
     });
   });
 
@@ -52,6 +53,11 @@ describe("toExportRows", () => {
     });
   });
 
+  it("marks guests who answered on the general link", () => {
+    const [row] = toExportRows([makeGuestRow({ added_via: "general_link" })]);
+    expect(row["Added via"]).toBe("General link");
+  });
+
   it("keeps the column order from the design", () => {
     const [row] = toExportRows([makeGuestRow()]);
     expect(Object.keys(row)).toEqual([
@@ -67,6 +73,7 @@ describe("toExportRows", () => {
       "Message",
       "Admin notes",
       "Answered at",
+      "Added via",
     ]);
   });
 });

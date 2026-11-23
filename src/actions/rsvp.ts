@@ -11,13 +11,14 @@ import {
 } from "@/repositories/invitationRepository";
 import { parseRsvpFormData, rsvpAnswerSchema } from "@/schemas/rsvp";
 import { sendAdminNotification } from "@/services/emailService";
+import { MSG_RSVP_CLOSED, MSG_SOMETHING_WRONG } from "@/utils/constants";
 
-export type RsvpActionState = { error?: string; success?: boolean };
+/** `slug` is set by the general-link action: the new guest's thank-you page. */
+export type RsvpActionState = { error?: string; success?: boolean; slug?: string };
 
 const INVALID_LINK = "This invitation link isn't valid.";
 const ALREADY_ANSWERED =
   "You've already sent your RSVP. Message Philip & Vera if something changed.";
-const RSVP_CLOSED = "RSVPs are closed. Message Philip & Vera if you'd still like to come.";
 
 /** A guest's own RSVP. Validates, re-checks the guest and the deadline on the server, then inserts once. */
 export async function submitRsvpAction(
@@ -44,7 +45,7 @@ export async function submitRsvpAction(
     if (invitation.response) return { error: ALREADY_ANSWERED };
 
     const settings = await getRsvpSettings();
-    if (!isRsvpOpen(settings, new Date())) return { error: RSVP_CLOSED };
+    if (!isRsvpOpen(settings, new Date())) return { error: MSG_RSVP_CLOSED };
 
     const { guest } = invitation;
     const row = toGuestResponseInsert(guest.id, parsed.data);
@@ -70,6 +71,6 @@ export async function submitRsvpAction(
     return { success: true };
   } catch (error) {
     console.error("Error submitting RSVP:", error);
-    return { error: "Something went wrong. Please try again." };
+    return { error: MSG_SOMETHING_WRONG };
   }
 }

@@ -17,6 +17,7 @@ export interface ExportRow {
   Message: string;
   "Admin notes": string;
   "Answered at": string;
+  "Added via": string;
 }
 
 const STATUS_LABEL = {
@@ -61,6 +62,7 @@ export function toExportRows(rows: GuestWithResponse[]): ExportRow[] {
       Message: r?.message || "",
       "Admin notes": guest.notes || "",
       "Answered at": guest.submitted_at ? formatManila(guest.submitted_at) : "",
+      "Added via": guest.added_via === "general_link" ? "General link" : "Personal link",
     };
   });
 }

@@ -432,3 +432,22 @@ Requested by the couple after the site went live:
 5. **Grammar fixes** to guest-facing text: "You're invited to the" (was "our", which clashed with "of Philip & Vera"); the "Wear your guess!" line; "…waiting for you!" on the prizes teaser; "We can't wait to see you, celebrate, and guess with you!".
 6. **Public showcase page, `/invitation`.** The couple asked for a link anyone can open to show off the invitation. It's the guest page without a guest: envelope, header, photo frames, "Wear your guess!", venue, prizes, Gift Guide and closing. The RSVP section shows "Please RSVP using the personal link Philip & Vera sent you. Don't have one yet? Message Philip & Vera." Its envelope shows on every visit. It reads and writes no guest data, is hidden from search engines (`noindex`), and is on the auth middleware's public-route list (`src/lib/public-routes.ts`). This reverses the earlier non-goal of not carrying over the wedding's `/general-invitation`.
 7. **Baby photos added.** The couple supplied both photos: `public/party/mini-vera.jpg` and `public/party/mini-philip.jpg`. The page build's file trace includes them, so the server-side "does the photo exist" check also works on Vercel.
+
+## 12. Personalized links switch (2026-11-23)
+
+The couple want to choose between two ways of collecting RSVPs: personal links for guests they add (as in the wedding), or one general link anyone can answer, like a Google Form.
+
+**Decisions (the couple's, 2026-11-23):**
+- A **Personalized links** on/off switch in the dashboard's RSVP Settings card. Default **on**, so nothing changes until it's flipped.
+- **On:** guests must be added first and answer from their personal link. `/invitation` stays a showcase with no form (§11.6).
+- **Off:** `/invitation` shows the RSVP form and anyone can answer. Each answer adds a guest to the list automatically, with the name they typed, labelled "via general link". After answering they see the normal thank-you page. Reopening `/invitation` shows a fresh form, so one phone can answer for several people.
+- **Personal links keep working while the switch is off.** Nobody who was already messaged gets a broken link.
+- **No limits on accepting guests:** no cap on the number of guests and no duplicate-name check. Duplicates can be deleted from the dashboard. The RSVP deadline and the "Close RSVPs now" switch still apply, to both kinds of link. Basic validation stays: a name is required and the guess is required if attending.
+- **Invisible bot trap:** a hidden form field people never see. If it's filled in, nothing is stored.
+
+**Build:**
+- Migration: `settings.personalized_links boolean not null default true`, plus a new enum `guest_source ('admin', 'general_link')` and column `guests.added_via guest_source not null default 'admin'`. RLS doesn't change: the public form writes through the server-only service-role client, like guest answers.
+- `submitGeneralRsvpAction` checks, in order: the bot trap, validation (plus-ones forced to 0), that the switch is off, and that RSVPs are open. It then inserts the guest (`added_via = 'general_link'`) and the response; if the response insert fails, the new guest is deleted again. It schedules the admin email as usual and returns the new guest's slug, so the form can go to `/rsvp/<slug>/thank-you`.
+- The `/invitation` page becomes dynamic, because it reads the switch. When the switch is off, the RSVP section shows the form while RSVPs are open and the closed card when they're closed.
+- On the thank-you page, guests added via the general link see "Answering for someone else? Fill in the form again" (a link to `/invitation`) while the switch is off.
+- Dashboard: the switch and a "Copy general link" button in the Settings card, a "via general link" badge in the guest table and cards, and an "Added via" column in the Excel export.

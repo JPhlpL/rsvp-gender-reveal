@@ -29,7 +29,7 @@ export function RsvpSection({ guest, settings, view, slug }: RsvpSectionProps) {
         <div className="mt-6">
           <GuestNotesCallout notes={guest.notes} />
           {view.kind === "form" && (
-            <RsvpForm uuid={guest.uuid} slug={slug} guestName={guest.name} />
+            <RsvpForm mode="guest" uuid={guest.uuid} slug={slug} guestName={guest.name} />
           )}
           {view.kind === "answered" && <AnswerStatusCard response={view.response} />}
           {view.kind === "closed" && (

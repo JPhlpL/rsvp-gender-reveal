@@ -20,8 +20,18 @@ import {
 import { submitRsvpAction } from "./rsvp";
 
 const UUID = "11111111-1111-4111-8111-111111111111";
-const guest = { id: "g1", uuid: UUID, name: "Sample Guest One", notes: null };
-const openSettings = { rsvp_deadline: "2099-12-01T23:59:59+08:00", rsvp_closed: false };
+const guest = {
+  id: "g1",
+  uuid: UUID,
+  name: "Sample Guest One",
+  notes: null,
+  added_via: "admin" as const,
+};
+const openSettings = {
+  rsvp_deadline: "2099-12-01T23:59:59+08:00",
+  rsvp_closed: false,
+  personalized_links: true,
+};
 
 function form(fields: Record<string, string>): FormData {
   const fd = new FormData();
